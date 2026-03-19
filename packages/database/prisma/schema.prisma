@@ -12,25 +12,29 @@ enum TranscriptionStatus {
   PROCESSING
   COMPLETED
   FAILED
-  CANCELLED
 }
 
 model Transcription {
-  id               String              @id @default(uuid()) @db.Uuid
-  fileName         String              @map("file_name") @db.VarChar(500)
-  fileKey          String              @map("file_key") @db.VarChar(500)
-  fileSize         Int                 @map("file_size")
-  status           TranscriptionStatus @default(PENDING)
-  chunkDurationSec Int                 @default(30) @map("chunk_duration_sec")
-  totalChunks      Int?                @map("total_chunks")
-  completedChunks  Int                 @default(0) @map("completed_chunks")
-  estimatedDuration Float?             @map("estimated_duration")
-  errorMessage     String?             @map("error_message") @db.Text
-  createdAt        DateTime            @default(now()) @map("created_at")
-  updatedAt        DateTime            @updatedAt @map("updated_at")
-  completedAt      DateTime?           @map("completed_at")
-  chunks           TranscriptionChunk[]
+  id            String              @id @default(uuid()) @db.Uuid
+  fileName      String              @map("file_name") @db.VarChar(500)
+  fileKey       String              @map("file_key") @db.VarChar(500)
+  fileSize      Int?                @map("file_size")
+  duration      Int?
+  status        TranscriptionStatus @default(PENDING)
 
+  chunkDurationSec Int             @default(300) @map("chunk_duration_sec")
+  totalChunks      Int?            @map("total_chunks")
+
+  errorMessage  String?             @map("error_message") @db.Text
+
+  createdAt     DateTime            @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime            @updatedAt @map("updated_at") @db.Timestamptz
+  completedAt   DateTime?           @map("completed_at") @db.Timestamptz
+
+  chunks        TranscriptionChunk[]
+
+  @@index([status])
+  @@index([createdAt])
   @@map("transcriptions")
 }
 
@@ -41,14 +45,20 @@ model TranscriptionChunk {
   startTime       Float               @map("start_time")
   endTime         Float               @map("end_time")
   status          TranscriptionStatus @default(PENDING)
-  text            String?             @db.Text
-  words           Json?
-  rawResponse     Json?               @map("raw_response")
+
+  segments          Json?
+  correctedSegments Json?             @map("corrected_segments")
+
   errorMessage    String?             @map("error_message") @db.Text
-  createdAt       DateTime            @default(now()) @map("created_at")
-  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime            @updatedAt @map("updated_at") @db.Timestamptz
+  completedAt     DateTime?           @map("completed_at") @db.Timestamptz
+
   transcription   Transcription       @relation(fields: [transcriptionId], references: [id], onDelete: Cascade)
 
   @@unique([transcriptionId, chunkIndex])
+  @@index([transcriptionId])
+  @@index([status])
   @@map("transcription_chunks")
 }
