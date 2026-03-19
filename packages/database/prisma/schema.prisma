@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TranscriptionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model Transcription {
+  id               String              @id @default(uuid()) @db.Uuid
+  fileName         String              @map("file_name") @db.VarChar(500)
+  fileKey          String              @map("file_key") @db.VarChar(500)
+  fileSize         Int                 @map("file_size")
+  status           TranscriptionStatus @default(PENDING)
+  chunkDurationSec Int                 @default(30) @map("chunk_duration_sec")
+  totalChunks      Int?                @map("total_chunks")
+  completedChunks  Int                 @default(0) @map("completed_chunks")
+  estimatedDuration Float?             @map("estimated_duration")
+  errorMessage     String?             @map("error_message") @db.Text
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @updatedAt @map("updated_at")
+  completedAt      DateTime?           @map("completed_at")
+  chunks           TranscriptionChunk[]
+
+  @@map("transcriptions")
+}
+
+model TranscriptionChunk {
+  id              String              @id @default(uuid()) @db.Uuid
+  transcriptionId String              @map("transcription_id") @db.Uuid
+  chunkIndex      Int                 @map("chunk_index")
+  startTime       Float               @map("start_time")
+  endTime         Float               @map("end_time")
+  status          TranscriptionStatus @default(PENDING)
+  text            String?             @db.Text
+  words           Json?
+  rawResponse     Json?               @map("raw_response")
+  errorMessage    String?             @map("error_message") @db.Text
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+  transcription   Transcription       @relation(fields: [transcriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([transcriptionId, chunkIndex])
+  @@map("transcription_chunks")
+}
