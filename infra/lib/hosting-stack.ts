@@ -59,6 +59,7 @@ export class HostingStack extends cdk.Stack {
 
     const ssrFunction = new lambda.DockerImageFunction(this, 'SSRFunction', {
       functionName: 'mntech-internal-ssr',
+      architecture: lambda.Architecture.ARM_64,
       code: ssrImageUri
         ? lambda.DockerImageCode.fromEcr(
             ecr.Repository.fromRepositoryName(this, 'SSRRepo', 'mntech-internal-ssr'),
@@ -66,6 +67,7 @@ export class HostingStack extends cdk.Stack {
           )
         : lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../..'), {
             file: 'Dockerfile',
+            platform: cdk.aws_ecr_assets.Platform.LINUX_ARM64,
           }),
       timeout: cdk.Duration.seconds(300),
       memorySize: 1024,
