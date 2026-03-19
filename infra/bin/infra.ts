@@ -9,7 +9,7 @@ const awsEnv = {
   region: process.env.CDK_DEFAULT_REGION || 'us-east-1',
 };
 
-new HostingStack(app, 'InternalTools', {
+new HostingStack(app, 'PersonalSite', {
   env: awsEnv,
   hostedZoneId: 'Z08723561FBMHGS7V62TS',
   domainName: 'michaelnusair.tech',

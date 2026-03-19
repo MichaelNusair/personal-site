@@ -91,7 +91,7 @@ jobs:
 
       - name: Invalidate CloudFront cache
         run: |
-          DIST_ID=$(aws cloudformation describe-stacks --stack-name InternalTools --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" --output text)
+          DIST_ID=$(aws cloudformation describe-stacks --stack-name PersonalSite --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" --output text)
           if [ -n "$DIST_ID" ]; then
             aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
           fi

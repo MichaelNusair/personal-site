@@ -1,5 +1,5 @@
 {
-  "name": "transcriptions-infra",
+  "name": "personal-site-infra",
   "private": true,
   "scripts": {
     "build": "tsc",
@@ -8,12 +8,17 @@
     "deploy": "cdk deploy --all --require-approval never"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.676.0",
+    "@aws-sdk/lib-dynamodb": "^3.676.0",
+    "@aws-sdk/client-ses": "^3.676.0",
     "aws-cdk-lib": "^2.180.0",
-    "constructs": "^10.4.2"
+    "constructs": "^10.4.2",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "aws-cdk": "^2.180.0",
+    "esbuild": "^0.21.5",
     "typescript": "^5.7.0"
   }
 }
