@@ -3,14 +3,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3001",
-    "build": "next build",
-    "start": "next start"
+    "build": "prisma generate --schema=packages/database/prisma/schema.prisma && next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "next": "latest",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next-auth": "^4.24.0",
     "@prisma/client": "^5.22.0",
     "lucide-react": "^0.400.0"
   },

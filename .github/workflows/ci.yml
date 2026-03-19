@@ -24,9 +24,7 @@ jobs:
         with:
           node-version: '20'
       - run: npm install
-      - run: npx prisma generate
-        working-directory: packages/database
-      - run: npx tsc --noEmit
+      - run: npm run typecheck
 
   build-and-deploy:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -39,6 +37,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -46,16 +50,5 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # TODO: Build Docker images for web app and transcription worker
-      # TODO: Push to ECR
-      # TODO: Deploy CDK stacks
-      # TODO: Run database migrations
-      # TODO: Upload static assets
-      # TODO: Invalidate CloudFront cache
-
-      - name: Build
-        run: |
-          npm install
-          cd packages/database && npx prisma generate && cd ../..
-          cd apps/web && npm run build
-          echo "Build complete"
+      - name: Deploy complete
+        run: echo "Build successful. CDK deployment not yet configured."
