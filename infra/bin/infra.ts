@@ -1,29 +1,19 @@
-/**
- * AWS CDK Infrastructure for Internal Tools (michaelnusair.tech)
- *
- * Stacks:
- * - InternalToolsStack: Next.js app on Lambda + CloudFront, Route53 for michaelnusair.tech
- * - InternalToolsWorkerStack: Transcription worker Lambda + SQS queue
- * - InternalToolsDbStack: RDS PostgreSQL for Transcription data (or shared with GetVL)
- *
- * TODO: Implement CDK stacks. Reference the GetVL infra for patterns:
- *   - infra/lib/hosting-stack.ts (Next.js on Lambda + CloudFront pattern)
- *   - infra/lib/compute-stack.ts (Lambda worker + SQS pattern)
- *   - infra/lib/storage-stack.ts (S3 + SQS pattern)
- *
- * Key differences from GetVL:
- * - Single domain (michaelnusair.tech), no multi-tenancy
- * - No wildcard SSL cert needed
- * - Simpler deployment (no tenant routing)
- * - Own database with only Transcription/TranscriptionChunk models
- * - Reuses the same AWS account
- */
-
+#!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
+import { HostingStack } from '../lib/hosting-stack';
 
 const app = new cdk.App();
 
-// TODO: Implement stacks
-// new InternalToolsStack(app, 'InternalTools', { ... });
+const awsEnv = {
+  account: process.env.CDK_DEFAULT_ACCOUNT || '676206907471',
+  region: process.env.CDK_DEFAULT_REGION || 'us-east-1',
+};
+
+new HostingStack(app, 'InternalTools', {
+  env: awsEnv,
+  hostedZoneId: 'Z08723561FBMHGS7V62TS',
+  domainName: 'michaelnusair.tech',
+  uploadsBucketName: 'getvl-uploads-676206907471-us-east-1',
+});
 
 app.synth();

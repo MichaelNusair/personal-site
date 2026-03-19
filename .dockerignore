@@ -1,7 +1,9 @@
 node_modules/
 .next/
 dist/
+.git/
 .env
 .env.local
-*.tsbuildinfo
+infra/
 cdk.out/
+*.tsbuildinfo
