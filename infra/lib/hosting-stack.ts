@@ -59,7 +59,7 @@ export class HostingStack extends cdk.Stack {
 
     const ssrFunction = new lambda.DockerImageFunction(this, 'SSRFunction', {
       functionName: 'mntech-internal-ssr',
-      architecture: lambda.Architecture.ARM_64,
+      architecture: lambda.Architecture.X86_64,
       code: ssrImageUri
         ? lambda.DockerImageCode.fromEcr(
             ecr.Repository.fromRepositoryName(this, 'SSRRepo', 'mntech-internal-ssr'),
@@ -67,7 +67,6 @@ export class HostingStack extends cdk.Stack {
           )
         : lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../..'), {
             file: 'Dockerfile',
-            platform: cdk.aws_ecr_assets.Platform.LINUX_ARM64,
           }),
       timeout: cdk.Duration.seconds(300),
       memorySize: 1024,
@@ -104,13 +103,6 @@ export class HostingStack extends cdk.Stack {
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
         cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
         originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
-      },
-      additionalBehaviors: {
-        '/_next/static/*': {
-          origin: origins.S3BucketOrigin.withOriginAccessControl(staticBucket),
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-        },
       },
       domainNames: [domainName, `www.${domainName}`],
       certificate,
