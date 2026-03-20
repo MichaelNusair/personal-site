@@ -33,7 +33,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 ENV AWS_LWA_INVOKE_MODE=buffered
-ENV AUTH_TRUST_HOST=true
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static

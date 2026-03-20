@@ -75,7 +75,6 @@ export class HostingStack extends cdk.Stack {
         NODE_ENV: 'production',
         PORT: '8080',
         AWS_LWA_INVOKE_MODE: 'buffered',
-        AUTH_TRUST_HOST: 'true',
         NEXTAUTH_URL: `https://${domainName}`,
         NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || '',
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
