@@ -76,6 +76,8 @@ jobs:
         working-directory: infra
         env:
           SSR_IMAGE_URI: ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO }}:${{ github.sha }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
         run: npx cdk deploy --all --require-approval never
 
       - name: Update Lambda function

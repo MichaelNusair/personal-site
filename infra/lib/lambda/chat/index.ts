@@ -57,18 +57,19 @@ const nowIso = () => new Date().toISOString();
 async function callAzureOpenAI(messages: ChatMessage[]): Promise<string> {
   if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY) {
     loge(
-      "Azure OpenAI configuration error: Missing endpoint or API key got " +
-        JSON.stringify({
-          AZURE_OPENAI_ENDPOINT,
-          AZURE_OPENAI_API_KEY,
-          AZURE_OPENAI_DEPLOYMENT,
-          AZURE_OPENAI_API_VERSION,
-        })
+      "Azure OpenAI configuration error: Missing endpoint or API key",
+      {
+        AZURE_OPENAI_ENDPOINT: AZURE_OPENAI_ENDPOINT ? '[set]' : '[missing]',
+        AZURE_OPENAI_API_KEY: AZURE_OPENAI_API_KEY ? '[set]' : '[missing]',
+        AZURE_OPENAI_DEPLOYMENT,
+        AZURE_OPENAI_API_VERSION,
+      }
     );
     return "I'm not configured yet. Please try again later.";
   }
 
-  const url = `${AZURE_OPENAI_ENDPOINT}`;
+  const base = AZURE_OPENAI_ENDPOINT.replace(/\/+$/, '');
+  const url = `${base}/openai/deployments/${AZURE_OPENAI_DEPLOYMENT}/chat/completions?api-version=${AZURE_OPENAI_API_VERSION}`;
   const payload = {
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
     temperature: 0.3,
