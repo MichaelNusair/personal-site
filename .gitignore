@@ -6,3 +6,4 @@ dist/
 *.tsbuildinfo
 cdk.out/
 pnpm-lock.yaml
+pnpm-workspace.yaml
