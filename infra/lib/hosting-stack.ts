@@ -176,7 +176,7 @@ export class HostingStack extends cdk.Stack {
       process.env.AZURE_OPENAI_ENDPOINT || '';
     const azureOpenAiDeployment =
       (this.node.tryGetContext('azureOpenAiDeployment') as string) ||
-      process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4.1';
+      process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-5.1';
     const azureOpenAiApiVersion =
       (this.node.tryGetContext('azureOpenAiApiVersion') as string) ||
       process.env.AZURE_OPENAI_API_VERSION || '2025-03-01-preview';

@@ -74,7 +74,7 @@ async function callAzureOpenAI(messages: ChatMessage[]): Promise<string> {
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
     temperature: 0.3,
     top_p: 0.9,
-    max_tokens: 600,
+    max_completion_tokens: 600,
   } as const;
   const res = await fetch(url, {
     method: "POST",
