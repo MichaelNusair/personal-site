@@ -5,3 +5,4 @@ dist/
 .env.local
 *.tsbuildinfo
 cdk.out/
+pnpm-lock.yaml
