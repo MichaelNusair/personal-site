@@ -184,18 +184,12 @@ export class HostingStack extends cdk.Stack {
       (this.node.tryGetContext('sesFromEmail') as string) ||
       process.env.SES_FROM_EMAIL || '';
 
-    const azureApiKeyParam = new cdk.CfnParameter(this, 'AzureOpenAiApiKey', {
-      type: 'String',
-      noEcho: true,
-      default: process.env.AZURE_OPENAI_API_KEY || '',
-      description: 'Azure OpenAI API key (fallback if not using Secrets Manager)',
-    });
-    const adminTokenParam = new cdk.CfnParameter(this, 'AdminToken', {
-      type: 'String',
-      noEcho: true,
-      default: process.env.ADMIN_TOKEN || '',
-      description: 'Admin bearer token (fallback if not using Secrets Manager)',
-    });
+    const azureOpenAiApiKey =
+      (this.node.tryGetContext('azureOpenAiApiKey') as string) ||
+      process.env.AZURE_OPENAI_API_KEY || '';
+    const adminToken =
+      (this.node.tryGetContext('adminToken') as string) ||
+      process.env.ADMIN_TOKEN || '';
 
     const chatEnv: { [key: string]: string } = {
       CONVERSATIONS_TABLE: conversationsTable.tableName,
@@ -205,10 +199,10 @@ export class HostingStack extends cdk.Stack {
       SES_FROM_EMAIL: sesFromEmail,
       AZURE_OPENAI_API_KEY: azureKeySecret
         ? azureKeySecret.secretValue.toString()
-        : azureApiKeyParam.valueAsString,
+        : azureOpenAiApiKey,
       ADMIN_TOKEN: adminTokenSecret
         ? adminTokenSecret.secretValue.toString()
-        : adminTokenParam.valueAsString,
+        : adminToken,
     };
 
     const chatFunction = new NodejsFunction(this, 'ChatFunction', {
