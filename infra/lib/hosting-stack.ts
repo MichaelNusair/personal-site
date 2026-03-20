@@ -176,10 +176,10 @@ export class HostingStack extends cdk.Stack {
       process.env.AZURE_OPENAI_ENDPOINT || '';
     const azureOpenAiDeployment =
       (this.node.tryGetContext('azureOpenAiDeployment') as string) ||
-      process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o-mini';
+      process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4.1';
     const azureOpenAiApiVersion =
       (this.node.tryGetContext('azureOpenAiApiVersion') as string) ||
-      process.env.AZURE_OPENAI_API_VERSION || '2024-02-15-preview';
+      process.env.AZURE_OPENAI_API_VERSION || '2025-03-01-preview';
     const sesFromEmail =
       (this.node.tryGetContext('sesFromEmail') as string) ||
       process.env.SES_FROM_EMAIL || '';
