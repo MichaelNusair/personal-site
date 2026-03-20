@@ -24,12 +24,12 @@ const SES_FROM_EMAIL = process.env.SES_FROM_EMAIL || "";
 const loge = (...args: any[]) => {
   console.error(...args, {
     TABLE,
-    AZURE_OPENAI_ENDPOINT,
-    AZURE_OPENAI_API_KEY,
+    AZURE_OPENAI_ENDPOINT: AZURE_OPENAI_ENDPOINT ? '[set]' : '[missing]',
+    AZURE_OPENAI_API_KEY: AZURE_OPENAI_API_KEY ? '[set]' : '[missing]',
     AZURE_OPENAI_DEPLOYMENT,
     AZURE_OPENAI_API_VERSION,
-    ADMIN_TOKEN,
-    SES_FROM_EMAIL,
+    ADMIN_TOKEN: ADMIN_TOKEN ? '[set]' : '[missing]',
+    SES_FROM_EMAIL: SES_FROM_EMAIL || '[missing]',
   });
 };
 

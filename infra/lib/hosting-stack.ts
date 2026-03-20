@@ -62,7 +62,7 @@ export class HostingStack extends cdk.Stack {
       architecture: lambda.Architecture.X86_64,
       code: ssrImageUri
         ? lambda.DockerImageCode.fromEcr(
-            ecr.Repository.fromRepositoryName(this, 'SSRRepo', 'mntech-internal-ssr'),
+            ecr.Repository.fromRepositoryName(this, 'SSRRepo', 'mntech-internal-web'),
             { tagOrDigest: ssrImageUri.split(':').pop() },
           )
         : lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../..'), {
