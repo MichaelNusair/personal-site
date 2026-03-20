@@ -78,6 +78,9 @@ jobs:
           SSR_IMAGE_URI: ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO }}:${{ github.sha }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: npx cdk deploy --all --require-approval never
 
       - name: Update Lambda function
