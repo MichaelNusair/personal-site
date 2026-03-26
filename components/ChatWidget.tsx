@@ -112,18 +112,19 @@ export function ChatWidget() {
                       }
                     >
                       {m.role === 'assistant' ? (
-                        <ReactMarkdown
-                          className="prose prose-sm prose-gray max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
-                          components={{
-                            a: ({ href, children }) => (
-                              <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                                {children}
-                              </a>
-                            ),
-                          }}
-                        >
-                          {m.content}
-                        </ReactMarkdown>
+                        <div className="prose prose-sm prose-gray max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                          <ReactMarkdown
+                            components={{
+                              a: ({ href, children }) => (
+                                <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                                  {children}
+                                </a>
+                              ),
+                            }}
+                          >
+                            {m.content}
+                          </ReactMarkdown>
+                        </div>
                       ) : (
                         m.content
                       )}
