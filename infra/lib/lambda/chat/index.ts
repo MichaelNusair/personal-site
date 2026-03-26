@@ -8,6 +8,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { randomUUID } from "crypto";
+import { SERVER_CONTEXT } from "./context";
 
 const dynamoClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(dynamoClient);
@@ -94,10 +95,10 @@ async function callAzureOpenAI(messages: ChatMessage[]): Promise<string> {
   return content;
 }
 
-function systemPrompt(ownerName = "Michael", staticContext?: string) {
+function systemPrompt(ownerName = "Michael") {
   return `You are an AI assistant for ${ownerName}'s personal site. Conduct a concise, friendly, interview-style conversation.
 You have the following static context about ${ownerName}:
-${staticContext || "(no static context provided)"}
+${SERVER_CONTEXT}
 Rules:
 - Ask one clear question at a time unless explicitly asked multiple.
 - Keep answers brief and helpful (2-5 short sentences), and propose a follow-up question when appropriate.
@@ -109,7 +110,7 @@ Rules:
 }
 
 async function handleStart(body: any) {
-  const { userEmail = "", ownerName = "Michael", staticContext } = body || {};
+  const { userEmail = "" } = body || {};
   const conversationId = randomUUID();
 
   const disclaimer =
@@ -118,7 +119,7 @@ async function handleStart(body: any) {
   const messages: ChatMessage[] = [
     {
       role: "system",
-      content: systemPrompt(ownerName, staticContext),
+      content: systemPrompt(),
       timestamp: nowIso(),
     },
     {
@@ -136,7 +137,6 @@ async function handleStart(body: any) {
         createdAt: nowIso(),
         updatedAt: nowIso(),
         userEmail,
-        ownerName,
         messages,
         corrections: [],
       },

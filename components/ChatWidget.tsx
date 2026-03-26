@@ -3,7 +3,6 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { RESUME_CONTEXT } from '@/content/resume-context';
 
 type ChatMessage = {
   role: 'assistant' | 'user';
@@ -36,7 +35,6 @@ export function ChatWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userEmail: email || undefined,
-          staticContext: RESUME_CONTEXT,
         }),
       });
       const data = await res.json();
