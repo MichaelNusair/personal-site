@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -107,10 +108,25 @@ export function ChatWidget() {
                       className={
                         m.role === 'user'
                           ? 'inline-block bg-blue-600 text-white px-3 py-2 rounded-lg'
-                          : 'inline-block bg-gray-100 text-gray-900 px-3 py-2 rounded-lg'
+                          : 'inline-block bg-gray-100 text-gray-900 px-3 py-2 rounded-lg text-left'
                       }
                     >
-                      {m.content}
+                      {m.role === 'assistant' ? (
+                        <ReactMarkdown
+                          className="prose prose-sm prose-gray max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                          components={{
+                            a: ({ href, children }) => (
+                              <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                                {children}
+                              </a>
+                            ),
+                          }}
+                        >
+                          {m.content}
+                        </ReactMarkdown>
+                      ) : (
+                        m.content
+                      )}
                     </div>
                   </div>
                 ))}
