@@ -9,6 +9,9 @@ import {
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { randomUUID } from "crypto";
 import { SERVER_CONTEXT } from "./context";
+import { STRIKE_LABS_CONTEXT } from "./strike-labs-context";
+
+export type ChatPersona = "personal" | "strike_labs";
 
 const dynamoClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(dynamoClient);
@@ -95,7 +98,12 @@ async function callAzureOpenAI(messages: ChatMessage[]): Promise<string> {
   return content;
 }
 
-function systemPrompt(ownerName = "Michael") {
+function normalizePersona(raw: unknown): ChatPersona {
+  if (raw === "strike_labs") return "strike_labs";
+  return "personal";
+}
+
+function systemPromptPersonal(ownerName = "Michael") {
   return `You are an AI assistant for ${ownerName}'s personal site. Conduct a concise, friendly, interview-style conversation.
 You have the following static context about ${ownerName}:
 ${SERVER_CONTEXT}
@@ -109,22 +117,61 @@ Rules:
 `;
 }
 
+function systemPromptStrikeLabs() {
+  return `You are an AI assistant for Strike Labs, a software and social agency. Conduct a concise, friendly, consultative conversation—like a knowledgeable team member, not a pushy salesperson.
+You have the following static context:
+${STRIKE_LABS_CONTEXT}
+Rules:
+- Ask one clear question at a time unless the user asks for multiple.
+- Keep answers brief and helpful (2–6 short sentences), and propose a follow-up when appropriate.
+- If unsure, say so and offer to continue via email or a call.
+- Never fabricate case studies, client names, or metrics; prefer general capabilities.
+- If the user shares contact info, acknowledge it and continue.
+`;
+}
+
+function buildSystemPrompt(persona: ChatPersona): string {
+  return persona === "strike_labs"
+    ? systemPromptStrikeLabs()
+    : systemPromptPersonal();
+}
+
+function startCopy(persona: ChatPersona): {
+  disclaimer: string;
+  assistantIntro: string;
+} {
+  if (persona === "strike_labs") {
+    return {
+      disclaimer:
+        "Disclaimer: This AI may be inaccurate. Conversations are recorded so the Strike Labs team can review and send corrections. If you share your email, you may receive corrections or follow-up.",
+      assistantIntro:
+        "Hi! I'm Strike Labs' AI assistant. What are you building or exploring, and how can we help?",
+    };
+  }
+  return {
+    disclaimer:
+      "Disclaimer: This AI may be inaccurate. Conversations are recorded so Michael can review and send corrections. If you share your email, you may receive corrections or follow-up.",
+    assistantIntro:
+      "Hi! I'm the AI assistant. What would you like to know about Michael or his experience?",
+  };
+}
+
 async function handleStart(body: any) {
   const { userEmail = "" } = body || {};
+  const persona = normalizePersona(body?.persona);
   const conversationId = randomUUID();
 
-  const disclaimer =
-    "Disclaimer: This AI may be inaccurate. Conversations are recorded so Michael can review and send corrections. If you share your email, you may receive corrections or follow-up.";
+  const { disclaimer, assistantIntro } = startCopy(persona);
 
   const messages: ChatMessage[] = [
     {
       role: "system",
-      content: systemPrompt(),
+      content: buildSystemPrompt(persona),
       timestamp: nowIso(),
     },
     {
       role: "assistant",
-      content: `${disclaimer}\n\nHi! I'm the AI assistant. What would you like to know about Michael or his experience?`,
+      content: `${disclaimer}\n\n${assistantIntro}`,
       timestamp: nowIso(),
     },
   ];
@@ -137,6 +184,7 @@ async function handleStart(body: any) {
         createdAt: nowIso(),
         updatedAt: nowIso(),
         userEmail,
+        persona,
         messages,
         corrections: [],
       },
@@ -232,16 +280,23 @@ async function handleCorrection(event: any, body: any) {
   );
 
   if (notifyUser && convo.userEmail && SES_FROM_EMAIL) {
+    const isStrike = convo.persona === "strike_labs";
+    const subject = isStrike
+      ? "Correction from Strike Labs"
+      : "Correction from Michael";
+    const bodyText = isStrike
+      ? `Hi,\n\nThe Strike Labs team reviewed your AI conversation and has a correction or follow-up:\n\n${correction}\n\nThanks for reaching out!`
+      : `Hi,\n\nMichael reviewed your AI conversation and has a correction or follow-up:\n\n${correction}\n\nThanks for reaching out!`;
     try {
       await ses.send(
         new SendEmailCommand({
           Destination: { ToAddresses: [convo.userEmail] },
           Source: SES_FROM_EMAIL,
           Message: {
-            Subject: { Data: "Correction from Michael" },
+            Subject: { Data: subject },
             Body: {
               Text: {
-                Data: `Hi,\n\nMichael reviewed your AI conversation and has a correction or follow-up:\n\n${correction}\n\nThanks for reaching out!`,
+                Data: bodyText,
               },
             },
           },

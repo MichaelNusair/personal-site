@@ -19,6 +19,19 @@ interface HostingStackProps extends cdk.StackProps {
   hostedZoneId: string;
   domainName: string;
   uploadsBucketName: string;
+  /** Prefix for resource names (ECR, Lambda function name, S3 bucket). Avoids collisions when multiple stacks share an account. */
+  resourcePrefix?: string;
+  /** White-label: site profile baked into the Docker image at build time. */
+  siteProfile?: 'personal' | 'strike_labs';
+  /** URL of the public site (defaults to https://<domainName>) */
+  siteUrl?: string;
+  /** Chat API base URL (defaults to https://chatapi.<domainName>/) */
+  chatApiBase?: string;
+  /** GetVL funnel overrides */
+  getvlStartIdeaUrl?: string;
+  getvlUploadRfqUrl?: string;
+  /** Set to false to skip deploying chat API resources (DynamoDB, Lambda, API GW). Useful when the site shares a chat API from another stack. */
+  deployChatApi?: boolean;
 }
 
 export class HostingStack extends cdk.Stack {
@@ -26,6 +39,11 @@ export class HostingStack extends cdk.Stack {
     super(scope, id, props);
 
     const { domainName, hostedZoneId, uploadsBucketName } = props;
+    const prefix = props.resourcePrefix || 'mntech-internal';
+    const siteProfile = props.siteProfile || 'personal';
+    const siteUrl = props.siteUrl || `https://${domainName}`;
+    const chatApiBase = props.chatApiBase || `https://chatapi.${domainName}/`;
+    const deployChatApi = props.deployChatApi !== false;
 
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
       hostedZoneId,
@@ -41,7 +59,7 @@ export class HostingStack extends cdk.Stack {
     // ─── Next.js SSR (Docker Lambda + CloudFront) ───────────────
 
     const staticBucket = new s3.Bucket(this, 'StaticAssets', {
-      bucketName: `mntech-internal-static-${this.account}-${this.region}`,
+      bucketName: `${prefix}-static-${this.account}-${this.region}`,
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -49,7 +67,7 @@ export class HostingStack extends cdk.Stack {
     });
 
     const ecrRepo = new ecr.Repository(this, 'WebAppRepo', {
-      repositoryName: 'mntech-internal-web',
+      repositoryName: `${prefix}-web`,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       emptyOnDelete: true,
       lifecycleRules: [{ maxImageCount: 5, description: 'Keep only 5 images' }],
@@ -58,15 +76,22 @@ export class HostingStack extends cdk.Stack {
     const ssrImageUri = process.env.SSR_IMAGE_URI;
 
     const ssrFunction = new lambda.DockerImageFunction(this, 'SSRFunction', {
-      functionName: 'mntech-internal-ssr',
+      functionName: `${prefix}-ssr`,
       architecture: lambda.Architecture.X86_64,
       code: ssrImageUri
         ? lambda.DockerImageCode.fromEcr(
-            ecr.Repository.fromRepositoryName(this, 'SSRRepo', 'mntech-internal-web'),
+            ecr.Repository.fromRepositoryName(this, 'SSRRepo', `${prefix}-web`),
             { tagOrDigest: ssrImageUri.split(':').pop() },
           )
         : lambda.DockerImageCode.fromImageAsset(path.join(__dirname, '../..'), {
             file: 'Dockerfile',
+            buildArgs: {
+              NEXT_PUBLIC_SITE_PROFILE: siteProfile,
+              NEXT_PUBLIC_SITE_URL: siteUrl,
+              NEXT_PUBLIC_CHAT_API_BASE: chatApiBase,
+              ...(props.getvlStartIdeaUrl ? { NEXT_PUBLIC_GETVL_START_IDEA_URL: props.getvlStartIdeaUrl } : {}),
+              ...(props.getvlUploadRfqUrl ? { NEXT_PUBLIC_GETVL_UPLOAD_RFQ_URL: props.getvlUploadRfqUrl } : {}),
+            },
           }),
       timeout: cdk.Duration.seconds(300),
       memorySize: 1024,
@@ -151,6 +176,8 @@ export class HostingStack extends cdk.Stack {
     });
 
     // ─── Chat API (DynamoDB + Lambda + API Gateway) ─────────────
+
+    if (deployChatApi) {
 
     const conversationsTable = new dynamodb.Table(this, 'ConversationsTable', {
       partitionKey: { name: 'conversationId', type: dynamodb.AttributeType.STRING },
@@ -270,13 +297,17 @@ export class HostingStack extends cdk.Stack {
 
     // ─── Outputs ────────────────────────────────────────────────
 
+    new cdk.CfnOutput(this, 'ChatApiUrl', { value: api.url });
+    new cdk.CfnOutput(this, 'ChatApiCustomDomainUrl', { value: `https://${apiDomainNameStr}/` });
+
+    } // end deployChatApi
+
     new cdk.CfnOutput(this, 'DistributionDomainName', { value: distribution.distributionDomainName });
     new cdk.CfnOutput(this, 'DistributionId', { value: distribution.distributionId });
     new cdk.CfnOutput(this, 'StaticBucketName', { value: staticBucket.bucketName });
     new cdk.CfnOutput(this, 'SSRFunctionUrl', { value: functionUrl.url });
     new cdk.CfnOutput(this, 'SSRFunctionName', { value: ssrFunction.functionName });
     new cdk.CfnOutput(this, 'ECRRepositoryUri', { value: ecrRepo.repositoryUri });
-    new cdk.CfnOutput(this, 'ChatApiUrl', { value: api.url });
-    new cdk.CfnOutput(this, 'ChatApiCustomDomainUrl', { value: `https://${apiDomainNameStr}/` });
+
   }
 }

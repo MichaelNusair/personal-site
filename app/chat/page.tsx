@@ -5,15 +5,20 @@ import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { getChatApiBase, getSiteConfig } from '@/lib/site-config';
+import { getChatPersonaForProfile, getSiteProfile } from '@/lib/site-profile';
 
 type ChatMessage = {
   role: 'assistant' | 'user';
   content: string;
   timestamp?: string;
 };
-const API_BASE = 'https://chatapi.michaelnusair.tech/';
 
 export default function ChatPage() {
+  const API_BASE = getChatApiBase();
+  const profile = getSiteProfile();
+  const { chatDisclaimerShort } = getSiteConfig(profile);
+  const chatPersona = getChatPersonaForProfile(profile);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -38,6 +43,7 @@ export default function ChatPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userEmail: email || undefined,
+          persona: chatPersona,
         }),
       });
       const data = await res.json();
@@ -83,9 +89,7 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-2xl bg-white rounded-lg shadow border p-4">
-        <div className="text-sm text-gray-500 mb-3">
-          Disclaimer: AI may be inaccurate. Conversations are recorded so Michael can review and send corrections.
-        </div>
+        <div className="text-sm text-gray-500 mb-3">Disclaimer: {chatDisclaimerShort}</div>
         {!conversationId ? (
           <div className="space-y-3">
             <Input

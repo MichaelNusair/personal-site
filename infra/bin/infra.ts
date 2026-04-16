@@ -14,6 +14,20 @@ new HostingStack(app, 'PersonalSite', {
   hostedZoneId: 'Z08723561FBMHGS7V62TS',
   domainName: 'michaelnusair.tech',
   uploadsBucketName: 'getvl-uploads-676206907471-us-east-1',
+  resourcePrefix: 'mntech-internal',
+  siteProfile: 'personal',
+});
+
+new HostingStack(app, 'StrikeLabsSite', {
+  env: awsEnv,
+  hostedZoneId: process.env.STRIKELABS_HOSTED_ZONE_ID || '',
+  domainName: 'strikelabs.tech',
+  uploadsBucketName: 'getvl-uploads-676206907471-us-east-1',
+  resourcePrefix: 'strikelabs',
+  siteProfile: 'strike_labs',
+  siteUrl: 'https://strikelabs.tech',
+  chatApiBase: 'https://chatapi.michaelnusair.tech/',
+  deployChatApi: false,
 });
 
 app.synth();
