@@ -91,7 +91,6 @@ jobs:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          STRIKELABS_HOSTED_ZONE_ID: ${{ secrets.STRIKELABS_HOSTED_ZONE_ID }}
         run: npx cdk deploy PersonalSite --require-approval never
 
       - name: Update Lambda function
@@ -108,110 +107,6 @@ jobs:
       - name: Invalidate CloudFront cache
         run: |
           DIST_ID=$(aws cloudformation describe-stacks --stack-name PersonalSite --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" --output text)
-          if [ -n "$DIST_ID" ]; then
-            aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
-          fi
-
-  build-and-deploy-strikelabs:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    env:
-      ECR_REPO: strikelabs-web
-    steps:
-      - name: Check if Strike Labs is configured
-        id: check
-        run: |
-          if [ -z "${{ secrets.STRIKELABS_HOSTED_ZONE_ID }}" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - uses: actions/checkout@v4
-        if: steps.check.outputs.skip != 'true'
-
-      - name: Configure AWS credentials
-        if: steps.check.outputs.skip != 'true'
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        if: steps.check.outputs.skip != 'true'
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build and push Docker image
-        if: steps.check.outputs.skip != 'true'
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build \
-            --build-arg NEXT_PUBLIC_SITE_PROFILE=strike_labs \
-            --build-arg NEXT_PUBLIC_SITE_URL=https://strikelabs.tech \
-            --build-arg NEXT_PUBLIC_CHAT_API_BASE=https://chatapi.michaelnusair.tech/ \
-            -t $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG \
-            -t $ECR_REGISTRY/$ECR_REPO:latest \
-            .
-          docker push $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPO:latest
-
-      - name: Upload static assets to S3
-        if: steps.check.outputs.skip != 'true'
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker create --name extract $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG
-          docker cp extract:/app/.next/static ./static-assets
-          docker rm extract
-          aws s3 sync ./static-assets s3://strikelabs-static-${{ secrets.AWS_ACCOUNT_ID }}-us-east-1/_next/static/ --delete
-
-      - name: Setup Node.js
-        if: steps.check.outputs.skip != 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install CDK dependencies
-        if: steps.check.outputs.skip != 'true'
-        working-directory: infra
-        run: npm ci
-
-      - name: Deploy CDK stack
-        if: steps.check.outputs.skip != 'true'
-        working-directory: infra
-        env:
-          SSR_IMAGE_URI: ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO }}:${{ github.sha }}
-          STRIKELABS_HOSTED_ZONE_ID: ${{ secrets.STRIKELABS_HOSTED_ZONE_ID }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-        run: npx cdk deploy StrikeLabsSite --require-approval never
-
-      - name: Update Lambda function
-        if: steps.check.outputs.skip != 'true'
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          aws lambda update-function-code \
-            --function-name strikelabs-ssr \
-            --image-uri $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG \
-            --no-cli-pager
-          aws lambda wait function-updated --function-name strikelabs-ssr
-
-      - name: Invalidate CloudFront cache
-        if: steps.check.outputs.skip != 'true'
-        run: |
-          DIST_ID=$(aws cloudformation describe-stacks --stack-name StrikeLabsSite --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" --output text)
           if [ -n "$DIST_ID" ]; then
             aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
           fi
