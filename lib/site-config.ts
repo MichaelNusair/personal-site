@@ -64,10 +64,10 @@ export function getSiteConfig(profile?: SiteProfileId): SiteBranding {
       askAiLabel: 'Ask Strike Labs AI',
       getvlStartIdeaUrl:
         process.env.NEXT_PUBLIC_GETVL_START_IDEA_URL ||
-        'https://strike.getvl.shop/start/idea',
+        'https://strikelabs.tech/start/idea',
       getvlUploadRfqUrl:
         process.env.NEXT_PUBLIC_GETVL_UPLOAD_RFQ_URL ||
-        'https://strike.getvl.shop/start/upload',
+        'https://strikelabs.tech/start/upload',
     };
   }
 
@@ -95,8 +95,8 @@ export function getSiteConfig(profile?: SiteProfileId): SiteBranding {
       'AI may be inaccurate. Conversations are recorded so Michael can review and send corrections.',
     askAiLabel: 'Ask my AI personal manager about me',
     getvlStartIdeaUrl:
-      process.env.NEXT_PUBLIC_GETVL_START_IDEA_URL || 'https://strike.getvl.shop/start/idea',
+      process.env.NEXT_PUBLIC_GETVL_START_IDEA_URL || 'https://strikelabs.tech/start/idea',
     getvlUploadRfqUrl:
-      process.env.NEXT_PUBLIC_GETVL_UPLOAD_RFQ_URL || 'https://strike.getvl.shop/start/upload',
+      process.env.NEXT_PUBLIC_GETVL_UPLOAD_RFQ_URL || 'https://strikelabs.tech/start/upload',
   };
 }

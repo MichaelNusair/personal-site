@@ -47,9 +47,11 @@ export function AgencyLanding() {
             </section>
             <section className="rounded-xl border border-slate-200 p-5 text-sm text-slate-600">
               <p>
-                This site runs on the same stack as the{' '}
-                <span className="font-medium text-slate-800">white-label personal-site</span>{' '}
-                template—one codebase, deploy twice with different branding.
+                Visit{' '}
+                <a href="https://strikelabs.tech" className="font-medium text-slate-800 underline underline-offset-2 hover:text-slate-600">
+                  strikelabs.tech
+                </a>
+                {' '}for our full agency site, AI chat, and lead intake.
               </p>
             </section>
           </aside>
