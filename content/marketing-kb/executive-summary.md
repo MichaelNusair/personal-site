@@ -2,7 +2,7 @@
 
 ## The Engineer Who Ships From Zero to Scale
 
-Michael Nusair is a senior full-stack engineer, cloud architect, and technical leader with **9+ years of experience** spanning defense-grade distributed systems, AI-powered commerce platforms, and a portfolio of self-built ventures. He doesn't just write code — he designs systems, ships products, and drives business outcomes.
+Michael Nusair is a senior full-stack engineer, cloud architect, and technical leader with **10+ years of experience** spanning defense-grade distributed systems, AI-powered commerce platforms, and a portfolio of self-built ventures. He doesn't just write code — he designs systems, ships products, and drives business outcomes.
 
 ---
 
@@ -10,8 +10,10 @@ Michael Nusair is a senior full-stack engineer, cloud architect, and technical l
 
 | | |
 |---|---|
-| **Current Role** | Full-Stack Engineer at Tolstoy (AI Commerce — 5,000+ brand partners) |
-| **Experience** | 9+ years across defense, startups, and enterprise |
+| **Current Role** | Full-Stack Engineer at Anchor (since Oct 2026) |
+| **Own Agency** | Owner & CEO of Strike Labs (Jul–Oct 2026) — 5 parallel clients solo, out-earned a single engineering salary |
+| **Previously** | Full-Stack Engineer at Tolstoy (AI Commerce — 5,000+ brand partners), Apr 2025–Jul 2026 |
+| **Experience** | 10+ years across defense, startups, and enterprise |
 | **Specialty** | 0-to-1 product builds, cloud-native architecture, AI integration |
 | **Cloud Platforms** | AWS (CDK, Lambda, ECS, EKS), GCP (Cloud Run), Azure, Kubernetes |
 | **Languages** | TypeScript, JavaScript, Python, C++, PHP |
@@ -51,4 +53,4 @@ With a background in product management and multiple self-funded ventures, Micha
 
 ---
 
-**Contact:** MNPCMW6444@gmail.com | [michaelnusair.tech](https://michaelnusair.tech) | [LinkedIn](https://linkedin.com/in/mik-n) | [GitHub](https://github.com/MichaelNusair)
+**Contact:** MNPCMW6444@gmail.com | [michaelnusair.site](https://michaelnusair.site) | [LinkedIn](https://linkedin.com/in/mik-n) | [GitHub](https://github.com/MichaelNusair)

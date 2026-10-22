@@ -1,10 +1,10 @@
 export const MARKETING_CONTEXT_SUMMARY = `
 Marketing Knowledge Base — Condensed Summary for AI Agent
 
-POSITIONING: Michael Nusair is a senior full-stack engineer, cloud architect, AI engineer, and serial technical founder with 9+ years of experience. He ships products from zero to scale — alone if needed. He is the engineer you hire when you need one person to do the work of a team.
+POSITIONING: Michael Nusair is a senior full-stack engineer, cloud architect, AI engineer, and serial technical founder with 10+ years of experience. He ships products from zero to scale — alone if needed. He is the engineer you hire when you need one person to do the work of a team.
 
 TOP SELLING POINTS:
-1. 9+ years in tech spanning defense (mission-critical C2 systems), AI commerce (Tolstoy), and 10+ self-built ventures
+1. 10+ years in tech spanning defense (mission-critical C2 systems), AI commerce (Tolstoy), and 10+ self-built ventures
 2. Genuine full-stack: TypeScript, React 17-19, Next.js 12-16, Node.js, Python/FastAPI, C++20, PHP/Laravel — not just frontend + REST
 3. Cloud-native architect: AWS (CDK, Lambda, ECS, EKS, 40+ Lambda functions in production), GCP (Cloud Run), Azure, Kubernetes/OpenShift (3.5 years)
 4. Built 6+ production AI systems: OpenAI Realtime voice AI, AWS Bedrock/Claude document analysis, Azure Whisper transcription, autonomous A/B testing, agentic UI, GPT-4 bug analysis
@@ -15,11 +15,15 @@ TOP SELLING POINTS:
 9. Product management background: 1 year as PM, writes RFCs, manages releases, bridges business and engineering
 10. Entrepreneur's instinct: thinks about ROI, user value, and business outcomes — not just code quality
 
-CURRENT ROLE: Full-Stack Engineer at Tolstoy (Apr 2025–present). Led the Media Gallery product from zero to production: serverless AWS CDK, Shopify SSR widgets, CubeJS/Snowflake analytics, autonomous A/B testing. Achieved 40% faster development with AI-assisted tooling. Open-sourced Preliquify.
+CURRENT ROLE: Full-Stack Engineer at Anchor (Oct 2026–present), full-time on-site in Tel Aviv-Yafo. Recently started — there is no public detail about this work yet, so do not describe or speculate about it beyond the role, employer, and start date.
+OWN AGENCY (Jul 2026–Oct 2026): Owner & CEO of Strike Labs (strikelabs.tech) — freelance engineering and product. Ran 5 client engagements in parallel as a one-person team, owning both engineering and product on each, and generated more revenue over the period than a single engineering salary would have paid. This is the strongest proof point that he can carry a client relationship end to end, not just the code.
+PREVIOUS ROLE: Full-Stack Engineer at Tolstoy (Apr 2025–Jul 2026). Led the Media Gallery product from zero to production: serverless AWS CDK, Shopify SSR widgets, CubeJS/Snowflake analytics, autonomous A/B testing. Achieved 40% faster development with AI-assisted tooling. Open-sourced Preliquify.
 DEFENSE EXPERIENCE (3.5 years): Mission-critical command and control system. Migrated monolith to 30+ microservices on Kubernetes/OpenShift. Led API gateway adoption (Tyk + SSO). Designed disaster recovery plan with live experiments. Senior on-call engineer 24/7. GraphQL APIs, MongoDB, Redis pub/sub/caching/locking.
 
 KEY VENTURES (tech overview only):
-- GetVL: AI technical planning platform — Next.js 16, AWS Bedrock/Claude, Prisma, SQS, Lambda workers, admin dashboard
+- GetVL (getvl.shop): AI technical planning platform — Next.js 16, AWS Bedrock/Claude, Prisma, SQS, Lambda workers, admin dashboard; runs white-labelled per client (e.g. strike.getvl.shop)
+- TripleC (triplec.host): "Claude, Code, Cloud" — Claude Code as an installable phone chat app on a machine of its own, with server-side sessions that survive switching devices and a full VS Code editor alongside; MIT-licensed and self-hostable, or managed
+- Koine (koinespace.com): community-led early traction for pre-PMF founders — finds where the intended customer already talks and what they complain about in their own words, then helps reach them without getting thrown out of promotion-hostile communities; the affordable counterpart to enterprise social listening
 - TalkPilot: Voice AI shopping assistant — OpenAI Realtime API, WebRTC, multi-platform (Wix + WordPress + embeddable widget), GCP Cloud Run
 - Teder: Live event ticketing/streaming — FastAPI/Python, 40+ Lambda functions, Stripe payments, Vimeo streaming, Cognito auth
 - SevenNup: Hotel booking — Next.js + Laravel, Aurora Serverless v2, full CI/CD with GitHub Actions OIDC, cost-optimized AWS
@@ -47,5 +51,5 @@ DIFFERENTIATORS vs. typical freelancers:
 
 EDUCATION: B.Sc. Computer Science (Open University, in progress), SOC Analyst Certified, Linux Essentials Certified, PADI Rescue Diver
 
-CONTACT: MNPCMW6444@gmail.com | +972-52-897-1871 | michaelnusair.tech | linkedin.com/in/mik-n | github.com/MichaelNusair | x.com/NusairMichael
+CONTACT: MNPCMW6444@gmail.com | +972-52-897-1871 | michaelnusair.site | linkedin.com/in/mik-n | github.com/MichaelNusair | x.com/NusairMichael
 `;

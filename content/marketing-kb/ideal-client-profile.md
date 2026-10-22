@@ -43,7 +43,7 @@ Michael delivers exceptional results for a specific type of client. Here's how t
 **The situation:** You're on Shopify (or considering it) and need custom engineering beyond what the app store offers. You want AI-powered features, custom widgets, or platform integrations.
 
 **Why Michael is ideal:**
-- Currently builds for the Shopify ecosystem at Tolstoy (5,000+ brands)
+- Built for the Shopify ecosystem at Tolstoy (5,000+ brands) for over a year
 - Created Preliquify — an open-source framework for building Shopify Liquid components with Preact
 - Built analytics pipelines, A/B testing systems, and AI-powered features for commerce
 - Deep understanding of Shopify APIs, theme architecture, and performance optimization

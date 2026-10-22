@@ -2,6 +2,8 @@
 
 ## What Michael Can Do For You
 
+**This is not theoretical.** From July to October 2026 Michael ran his own agency, **Strike Labs** ([strikelabs.tech](https://strikelabs.tech)), as owner and CEO — serving **five client engagements in parallel** as a one-person team, acting as both engineer and product owner on each, and earning more over those months than a single engineering salary would have paid. He has since joined Anchor full-time and takes freelance work alongside it.
+
 ---
 
 ## Service Offerings
@@ -42,7 +44,7 @@ Michael provides:
 
 **Ideal for:** Early-stage startups without a technical co-founder. Non-technical founders validating product ideas. Companies preparing for their next funding round.
 
-**Credibility:** Built and led technical architecture for 10+ products as solo CTO. Year of formal product management experience. 9+ years in the industry.
+**Credibility:** Built and led technical architecture for 10+ products as solo CTO. Year of formal product management experience. 10+ years in the industry.
 
 ---
 
@@ -158,4 +160,4 @@ Regardless of the service, Michael always provides:
 3. **Proposal** — Scope, timeline, and pricing within 48 hours
 4. **Kick off** — CI/CD pipeline on day one, first deliverable within the week
 
-**Contact:** MNPCMW6444@gmail.com | [michaelnusair.tech](https://michaelnusair.tech) | +972-52-897-1871
+**Contact:** MNPCMW6444@gmail.com | [michaelnusair.site](https://michaelnusair.site) | +972-52-897-1871

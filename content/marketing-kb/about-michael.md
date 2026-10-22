@@ -41,7 +41,11 @@ He thrives in ambiguity. Give him an undefined problem space and he'll clarify t
 
 ## Today
 
-Michael currently works as a full-stack engineer at **Tolstoy**, the AI commerce platform used by 5,000+ brands including major Shopify merchants. There, he led the Media Gallery project from zero to production — designing serverless AWS infrastructure, building analytics pipelines with CubeJS and Snowflake, and creating an autonomous A/B testing system that spans multiple product lines.
+Michael is a full-stack engineer at **Anchor**, which he joined in October 2026 — full-time, on-site in Tel Aviv-Yafo.
+
+Immediately before that he ran his own agency, **Strike Labs**, as owner and CEO from July to October 2026. He served five client engagements in parallel as a one-person team, acting as both engineer and product owner on each, and the agency earned more over those months than a single engineering salary would have paid.
+
+Before that he spent more than a year at **Tolstoy**, the AI commerce platform used by 5,000+ brands including major Shopify merchants. There, he led the Media Gallery project from zero to production — designing serverless AWS infrastructure, building analytics pipelines with CubeJS and Snowflake, and creating an autonomous A/B testing system that spans multiple product lines.
 
 He also created and open-sourced **Preliquify**, a framework that compiles Preact/JSX components into Shopify Liquid templates with client-side hydration — solving a real gap in the Shopify ecosystem.
 
@@ -55,4 +59,4 @@ He's not just an engineer you hire to write features. He's a technical leader wh
 
 ---
 
-**Get in touch:** [michaelnusair.tech](https://michaelnusair.tech) | MNPCMW6444@gmail.com
+**Get in touch:** [michaelnusair.site](https://michaelnusair.site) | MNPCMW6444@gmail.com

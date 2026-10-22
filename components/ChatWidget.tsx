@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { getChatApiBase } from '@/lib/site-config';
 
 type ChatMessage = {
   role: 'assistant' | 'user';
@@ -11,7 +12,7 @@ type ChatMessage = {
   timestamp?: string;
 };
 
-const API_BASE = 'https://chatapi.michaelnusair.tech/';
+const API_BASE = getChatApiBase();
 
 export function ChatWidget() {
   const [conversationId, setConversationId] = useState<string | null>(null);

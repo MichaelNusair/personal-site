@@ -69,6 +69,89 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
             <AccordionContent>
               <div className="text-sm space-y-2">
                 <Accordion type="multiple" className="space-y-2">
+                  <AccordionItem value="venture-getvl">
+                    <AccordionTrigger className="font-semibold">
+                      GetVL — Turn ideas into actionable product plans
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="mb-2">
+                        AI technical-planning platform: users describe an idea or
+                        upload documents, and it generates a structured product
+                        plan. Next.js with AWS Bedrock/Claude, Prisma, SQS and
+                        Lambda workers, plus an admin dashboard. Runs
+                        white-labelled per client.
+                      </p>
+                      <div className="flex flex-col gap-1">
+                        <a
+                          href="https://getvl.shop"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          https://getvl.shop
+                        </a>
+                        <a
+                          href="https://strike.getvl.shop"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          https://strike.getvl.shop
+                        </a>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="venture-triplec">
+                    <AccordionTrigger className="font-semibold">
+                      TripleC — Claude, Code, Cloud
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="mb-2">
+                        Claude Code as a chat app you can install on your phone,
+                        running on a machine of its own. Sessions live on the
+                        server rather than in a laptop terminal, so a task
+                        started at a desk is picked up on a phone with context
+                        intact—and a full VS Code editor is still there when you
+                        want files, diffs and a terminal. MIT-licensed and
+                        self-hostable, or run as a managed service.
+                      </p>
+                      <a
+                        href="https://triplec.host"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline"
+                      >
+                        https://triplec.host
+                      </a>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="venture-koine">
+                    <AccordionTrigger className="font-semibold">
+                      Koine — Learn the language of your market
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="mb-2">
+                        Community-led early traction for pre-product-market-fit
+                        founders: finds where the intended customer already
+                        talks and what they complain about in their own words,
+                        then helps get in front of those people without being
+                        thrown out of communities that are hostile to promotion
+                        by design. The affordable counterpart to enterprise
+                        social listening.
+                      </p>
+                      <a
+                        href="https://koinespace.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline"
+                      >
+                        https://koinespace.com
+                      </a>
+                    </AccordionContent>
+                  </AccordionItem>
+
                   <AccordionItem value="venture-loxia">
                     <AccordionTrigger className="font-semibold">
                       Loxia.ai — Automated GraphQL black‑box
@@ -228,9 +311,67 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
 
         <Accordion
           type="multiple"
-          defaultValue={["exp-tolstoy"]}
+          defaultValue={["exp-anchor", "exp-strikelabs", "exp-tolstoy"]}
           className="space-y-2"
         >
+          {/* Anchor */}
+          <AccordionItem value="exp-anchor">
+            <AccordionTrigger className="py-3">
+              <span className="text-xl sm:text-2xl font-bold">Anchor</span>
+              <span className="ml-4 text-sm text-gray-500 font-normal">
+                Full-Stack Engineer — October 2026 – Now
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-sm text-gray-500">
+                Full-time · On-site · Tel Aviv-Yafo, Israel
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Strike Labs (freelance) */}
+          <AccordionItem value="exp-strikelabs">
+            <AccordionTrigger className="py-3">
+              <span className="text-xl sm:text-2xl font-bold">Strike Labs</span>
+              <span className="ml-4 text-sm text-gray-500 font-normal">
+                Owner & CEO — July 2026 – October 2026
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-sm text-gray-500 mb-3">
+                Founder, owner and CEO · Freelance engineering & product ·{" "}
+                <a
+                  href="https://strikelabs.tech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  strikelabs.tech
+                </a>
+              </p>
+              <ul className="list-disc list-inside text-sm space-y-1 ml-4">
+                <li>
+                  Founded and ran the agency end to end as{" "}
+                  <strong>owner and CEO</strong>—sales, scoping, delivery, and
+                  client relationships.
+                </li>
+                <li>
+                  Ran <strong>5 client engagements in parallel</strong> as a
+                  one-person team.
+                </li>
+                <li>
+                  Owned <strong>both engineering and product</strong> on each
+                  engagement—scoping the problem, shaping the solution, and
+                  shipping it.
+                </li>
+                <li>
+                  Generated <strong>more revenue over the period than a single
+                  engineering salary</strong> would have paid.
+                </li>
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+
           {/* Tolstoy */}
           <AccordionItem value="exp-tolstoy">
             <AccordionTrigger className="py-3">
@@ -243,10 +384,13 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
                 <span className="text-xl sm:text-2xl font-bold">Tolstoy</span>
               </div>
               <span className="ml-4 text-sm text-gray-500 font-normal">
-                Full-Stack Engineer — April 2025 – Now
+                Full-Stack Engineer — April 2025 – July 2026
               </span>
             </AccordionTrigger>
             <AccordionContent>
+              <p className="text-sm text-gray-500 mb-3">
+                Full-time · On-site · Tel Aviv-Yafo, Israel
+              </p>
               <p className="text-sm mb-3">
                 Joined the AI platform/player team and led the{" "}
                 <strong>Tolstoy Media Gallery</strong> from concept to
@@ -320,10 +464,14 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
             <AccordionTrigger className="py-3">
               <span className="text-xl sm:text-2xl font-bold">DefenseTech</span>
               <span className="ml-4 text-sm text-gray-500 font-normal">
-                Full-Stack Engineer — October 2021 – April 2025
+                Full-Stack Engineer — November 2021 – April 2025
               </span>
             </AccordionTrigger>
             <AccordionContent>
+              <p className="text-sm text-gray-500 mb-3">
+                Full-time · On-site · Center District, Israel — 8 yrs 10 mos at
+                DefenseTech across the three roles below
+              </p>
               <p className="text-sm mb-3">
                 Transitioned into the development team for a main{" "}
                 <strong>Command & Control system</strong>, a mission-critical
@@ -420,6 +568,9 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
               </span>
             </AccordionTrigger>
             <AccordionContent>
+              <p className="text-sm text-gray-500 mb-3">
+                DefenseTech · Full-time · On-site
+              </p>
               <p className="text-sm">
                 Managing the development and assimilation process of all new
                 systems/versions used in the control division. Represented{" "}
@@ -442,6 +593,9 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
               </span>
             </AccordionTrigger>
             <AccordionContent>
+              <p className="text-sm text-gray-500 mb-3">
+                DefenseTech · Full-time · On-site
+              </p>
               <p className="text-sm">
                 Held <strong>high-responsibility roles</strong>, both while
                 overseeing <strong>operational shifts</strong> and leading

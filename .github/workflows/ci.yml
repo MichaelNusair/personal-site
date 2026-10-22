@@ -24,6 +24,8 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
+      # Prisma types are generated, not checked in — typecheck fails without this.
+      - run: npx prisma generate --schema=packages/database/prisma/schema.prisma
       - run: npm run typecheck
 
   build-and-deploy:
@@ -55,8 +57,8 @@ jobs:
         run: |
           docker build \
             --build-arg NEXT_PUBLIC_SITE_PROFILE=personal \
-            --build-arg NEXT_PUBLIC_SITE_URL=https://michaelnusair.tech \
-            --build-arg NEXT_PUBLIC_CHAT_API_BASE=https://chatapi.michaelnusair.tech/ \
+            --build-arg NEXT_PUBLIC_SITE_URL=https://michaelnusair.site \
+            --build-arg NEXT_PUBLIC_CHAT_API_BASE=https://chatapi.michaelnusair.site/ \
             -t $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG \
             -t $ECR_REGISTRY/$ECR_REPO:latest \
             .

@@ -1,6 +1,6 @@
-# Transcriptions (michaelnusair.tech)
+# Transcriptions (michaelnusair.site)
 
-Standalone internal tools extracted from GetVL. Deployed to `michaelnusair.tech`.
+Standalone internal tools extracted from GetVL. Deployed to `michaelnusair.site`.
 
 ## Features
 
@@ -26,4 +26,4 @@ npm run dev
 
 ## Deployment
 
-Deployed via AWS CDK to `michaelnusair.tech`. See `infra/` for stack definitions.
+Deployed via AWS CDK to `michaelnusair.site`. See `infra/` for stack definitions.

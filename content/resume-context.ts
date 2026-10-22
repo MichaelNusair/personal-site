@@ -32,6 +32,15 @@ Skills Summary
 - Python, Selenium, Puppeteer
 
 Ventures (nights & weekends)
+- GetVL — Turn ideas into actionable product plans
+  AI technical-planning platform: users describe an idea or upload documents and it generates a structured product plan. Next.js with AWS Bedrock/Claude, Prisma, SQS and Lambda workers, plus an admin dashboard. Runs white-labelled per client (e.g. the Strike Labs instance).
+  https://getvl.shop / https://strike.getvl.shop
+- TripleC — Claude, Code, Cloud
+  Claude Code as a chat app you can install on your phone, running on a machine of its own. Sessions live on the server rather than in a laptop terminal, so a task started at a desk is picked up on a phone with context intact; a full VS Code editor is still available for files, diffs and a terminal. MIT-licensed and self-hostable, or run as a managed service.
+  https://triplec.host
+- Koine — Learn the language of your market
+  Community-led early traction for pre-product-market-fit founders: finds where the intended customer already talks and what they complain about in their own words, then helps get in front of those people without being thrown out of communities that are hostile to promotion by design. The affordable counterpart to enterprise social listening.
+  https://koinespace.com
 - Loxia.ai — Automated GraphQL black-box
   Built an engine that turns schemas and business rules into deployable GraphQL APIs; Node/Express services with a React/Next.js admin—primarily backend focused.
   https://loxia.ai
@@ -52,17 +61,24 @@ Ventures (nights & weekends)
 - And lots more — since many can be built with AI in a day, not all are listed here.
 
 Experience
-- Tolstoy (Full-Stack Engineer, Apr 2025 – Now)
+- Anchor (Full-Stack Engineer, Oct 2026 – Now)
+  Full-time, on-site in Tel Aviv-Yafo, Israel. Current role, started October 2026 — no public write-up of the work yet.
+- Strike Labs (Owner & CEO — freelance full-stack engineering & product, Jul 2026 – Oct 2026)
+  Founded, owned and ran Strike Labs as CEO: sales, scoping, delivery and client relationships. Served 5 client engagements in parallel as a one-person team, owning both engineering and product on each—scoping the problem, shaping the solution, and shipping it. Generated more revenue over the period than a single engineering salary would have paid.
+  https://strikelabs.tech
+- Tolstoy (Full-Stack Engineer, Apr 2025 – Jul 2026)
+  Full-time, on-site in Tel Aviv-Yafo, Israel.
   Joined the AI platform/player team and led the Tolstoy Media Gallery from concept to production—a fully-featured replacement for Shopify's native media gallery, with rich analytics and an automated A/B testing system. E2E project ownership—Designed and implemented all parts including serverless AWS CDK infrastructure and backend, Shopify-compatible server-side-rendered widget for best performance and resilience, and consistently-designed ShadCN control plane for merchants. Quickly explored the Shopify Admin API and architected an optimized serverless backend with Lambda, SQS, DynamoDB, and RDS, exposing a structured API with Zod schemas. Built analytics pipelines using CubeJS to aggregate data from Snowflake. Created a maintainable workflow to write Preact code once and compile it to both SSR Liquid templates and CSR hydration scripts, releasing this as the open-source mini-framework Preliquify (github.com/MichaelNusair/preliquify). Leveraged Cursor IDE (and other AI tools) for AI-assisted development, accelerating iteration cycles, while heavily integrating GenAI into products.
   https://gotolstoy.com
-- DefenseTech (Full-Stack Engineer, Oct 2021 – Apr 2025)
+- DefenseTech (Full-Stack Engineer, Nov 2021 – Apr 2025)
+  Full-time, on-site in Center District, Israel. 8 yrs 10 mos at DefenseTech in total, across this role and the two below.
   Transitioned into the development team for a main Command & Control system, a mission-critical application for defense operations and safety.
   Frontend: maintained a legacy AngularJS-Cesium pioneering web-based system, a project originally initiated in 2014, while optimizing performance and integrating modern React and MUI components using react2angular.
   Backend: designed and developed a Node.js-based distributed system, migrating from a monolithic architecture to 30+ microservices. Led a new real-time notifications feature from 0. In the last year, led the adoption of Tyk as the API gateway, integrating it with an rhSSO solution to meet authentication and authorization requirements. This deepened understanding of API gateways, identity management, and security protocols. Utilized GraphQL as the standard framework for backend APIs, on-prem MongoDB replica set as main DB, Mongoose as ORM and Redis for queueing, caching, and Pub/Sub features.
   DevOps & Operations: Kubernetes deployments and CI/CD pipelines with Jenkins, Helm, and ArgoCD. Led the system's Disaster Recovery Plan (DRP), conducting experiments to improve multi-regional resilience. Senior on-call engineer, responsible for troubleshooting critical production issues in a 24/7 rotation during high-stakes operational periods.
-- Product Manager (Oct 2020 – Oct 2021)
+- Product Manager at DefenseTech (Oct 2020 – Oct 2021)
   Managing the development and assimilation process of all new systems/versions used in the control division. Represented hundreds of operational users while pushing the product forward, dealing with complex bug fixes and new features from conception to deployment, all under the strict directives of operating capability declaration.
-- Operations Specialist (2016 – 2020)
+- Operations Specialist at DefenseTech (2016 – 2020)
   Held high-responsibility roles, both while overseeing operational shifts and leading teams, as well as managing strategic projects when not on shift.
 
 Education

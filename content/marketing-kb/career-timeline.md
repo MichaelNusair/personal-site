@@ -83,8 +83,8 @@ While working full-time in defense, Michael simultaneously built and launched **
 
 ---
 
-### 2025–Present | Full-Stack Engineer — Tolstoy
-**Tel Aviv, Israel**
+### 2025–2026 | Full-Stack Engineer — Tolstoy
+**Tel Aviv-Yafo, Israel** · Apr 2025 – Jul 2026 · Full-time, on-site
 
 Michael joined Tolstoy, the AI commerce platform powering 5,000+ brands, and immediately took ownership of a flagship product.
 
@@ -99,6 +99,28 @@ Michael joined Tolstoy, the AI commerce platform powering 5,000+ brands, and imm
 - Built **Agentic UI components** that adapt to user behavior in real-time
 
 **Why it matters:** At Tolstoy, Michael proved he can walk into a fast-moving startup and immediately deliver high-impact, zero-to-one products with modern tooling.
+
+---
+
+### 2026 | Owner & CEO — Strike Labs
+**[strikelabs.tech](https://strikelabs.tech)** · Jul 2026 – Oct 2026 · Freelance engineering & product
+
+Michael founded and ran his own agency, acting as owner and CEO while remaining the person who shipped the work.
+
+**Key achievements:**
+- Served **5 client engagements in parallel** as a one-person team
+- Owned **both engineering and product** on every engagement — scoping the problem, shaping the solution, and shipping it
+- Ran the business end to end: sales, scoping, delivery, and client relationships
+- Generated **more revenue over the period than a single engineering salary** would have paid
+
+**Why it matters:** This is the clearest evidence that Michael can carry a client relationship end to end. Five simultaneous clients, no team to hide behind, and an outcome that beat the market rate for one engineer — it is the engineer-plus-product combination working as a business, not just a job description.
+
+---
+
+### 2026–Present | Full-Stack Engineer — Anchor
+**Tel Aviv-Yafo, Israel** · Oct 2026 – present · Full-time, on-site
+
+Michael's current role. He joined Anchor in October 2026; there is no public write-up of this work yet.
 
 ---
 

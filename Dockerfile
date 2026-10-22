@@ -16,8 +16,8 @@ COPY . .
 
 # White-label: set per deployment (see lib/site-profile.ts, lib/site-config.ts)
 ARG NEXT_PUBLIC_SITE_PROFILE=personal
-ARG NEXT_PUBLIC_SITE_URL=https://michaelnusair.tech
-ARG NEXT_PUBLIC_CHAT_API_BASE=https://chatapi.michaelnusair.tech/
+ARG NEXT_PUBLIC_SITE_URL=https://michaelnusair.site
+ARG NEXT_PUBLIC_CHAT_API_BASE=https://chatapi.michaelnusair.site/
 ARG NEXT_PUBLIC_GETVL_START_IDEA_URL=
 ARG NEXT_PUBLIC_GETVL_UPLOAD_RFQ_URL=
 ENV NEXT_PUBLIC_SITE_PROFILE=$NEXT_PUBLIC_SITE_PROFILE

@@ -18,7 +18,7 @@ Depending on complexity, Michael can deliver a production-ready MVP in **2–6 w
 
 ### Can you work with my existing team?
 
-Absolutely. Michael has experience both as a **solo builder** and as an **embedded team member**. At Tolstoy, he works within an engineering team while owning entire product verticals. At DefenseTech, he collaborated across frontend, backend, and infrastructure teams. He adapts to your processes while elevating the team's output.
+Absolutely. Michael has experience both as a **solo builder** and as an **embedded team member**. At Tolstoy, he worked within an engineering team while owning entire product verticals. At DefenseTech, he collaborated across frontend, backend, and infrastructure teams. Running Strike Labs, he managed five client teams at once from the outside. He adapts to your processes while elevating the team's output.
 
 ---
 
@@ -43,13 +43,13 @@ Yes — and you won't need a separate DevOps hire. Michael sets up CI/CD (GitHub
 
 ### What's your rate?
 
-Michael positions himself as a **premium engineer** and prices accordingly. His rate reflects 9+ years of experience, full-stack + cloud + AI expertise, and the ability to operate independently without management overhead. Contact him directly for current rates — they vary by engagement model (project, retainer, embedded).
+Michael positions himself as a **premium engineer** and prices accordingly. His rate reflects 10+ years of experience, full-stack + cloud + AI expertise, and the ability to operate independently without management overhead. Contact him directly for current rates — they vary by engagement model (project, retainer, embedded).
 
 ---
 
 ### Are you available for full-time roles?
 
-Michael is currently employed at Tolstoy. He's available for **freelance, consulting, and advisory engagements** alongside his primary role. For the right opportunity, he's open to discussions about dedicated engagements.
+Michael is currently employed at Anchor. He's available for **freelance, consulting, and advisory engagements** alongside his primary role — he ran his own agency, Strike Labs, from July to October 2026, serving five clients in parallel, so this is a mode he has already proven at volume. For the right opportunity, he's open to discussions about dedicated engagements.
 
 ---
 
@@ -67,7 +67,7 @@ Michael is a **genuine full-stack engineer**. His frontend work includes React 1
 
 ### Have you worked with Shopify?
 
-Extensively. Michael currently builds for the Shopify ecosystem at **Tolstoy**, where he:
+Extensively. Michael spent over a year building for the Shopify ecosystem at **Tolstoy**, where he:
 - Built server-side-rendered Liquid widgets
 - Created and open-sourced **Preliquify** (Preact-to-Liquid compiler)
 - Integrated with Shopify Admin API
@@ -127,7 +127,7 @@ Three things:
 
 1. **Email:** MNPCMW6444@gmail.com
 2. **Call:** +972-52-897-1871
-3. **Website:** [michaelnusair.tech](https://michaelnusair.tech)
+3. **Website:** [michaelnusair.site](https://michaelnusair.site)
 4. **LinkedIn:** [linkedin.com/in/mik-n](https://linkedin.com/in/mik-n)
 
 Michael typically responds within 24 hours and can have a discovery call on the books within the week.

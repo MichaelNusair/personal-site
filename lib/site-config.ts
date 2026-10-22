@@ -8,12 +8,12 @@ function trimTrailingSlash(url: string): string {
 
 export function getPublicSiteUrl(): string {
   return trimTrailingSlash(
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://michaelnusair.tech',
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://michaelnusair.site',
   );
 }
 
 export function getChatApiBase(): string {
-  const raw = process.env.NEXT_PUBLIC_CHAT_API_BASE || 'https://chatapi.michaelnusair.tech/';
+  const raw = process.env.NEXT_PUBLIC_CHAT_API_BASE || 'https://chatapi.michaelnusair.site/';
   return raw.endsWith('/') ? raw : `${raw}/`;
 }
 

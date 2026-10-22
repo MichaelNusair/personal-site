@@ -32,6 +32,15 @@ Skills Summary
 - Python, Selenium, Puppeteer
 
 Ventures (nights & weekends)
+- GetVL — Turn ideas into actionable product plans
+  AI technical-planning platform: users describe an idea or upload documents and it generates a structured product plan. Next.js with AWS Bedrock/Claude, Prisma, SQS and Lambda workers, plus an admin dashboard. Runs white-labelled per client (e.g. the Strike Labs instance).
+  https://getvl.shop / https://strike.getvl.shop
+- TripleC — Claude, Code, Cloud
+  Claude Code as a chat app you can install on your phone, running on a machine of its own. Sessions live on the server rather than in a laptop terminal, so a task started at a desk is picked up on a phone with context intact; a full VS Code editor is still available for files, diffs and a terminal. MIT-licensed and self-hostable, or run as a managed service.
+  https://triplec.host
+- Koine — Learn the language of your market
+  Community-led early traction for pre-product-market-fit founders: finds where the intended customer already talks and what they complain about in their own words, then helps get in front of those people without being thrown out of communities that are hostile to promotion by design. The affordable counterpart to enterprise social listening.
+  https://koinespace.com
 - Loxia.ai — Automated GraphQL black-box
   Built an engine that turns schemas and business rules into deployable GraphQL APIs; Node/Express services with a React/Next.js admin—primarily backend focused.
   https://loxia.ai
@@ -52,17 +61,24 @@ Ventures (nights & weekends)
 - And lots more — since many can be built with AI in a day, not all are listed here.
 
 Experience
-- Tolstoy (Full-Stack Engineer, Apr 2025 – Now)
+- Anchor (Full-Stack Engineer, Oct 2026 – Now)
+  Full-time, on-site in Tel Aviv-Yafo, Israel. Current role, started October 2026 — no public write-up of the work yet.
+- Strike Labs (Owner & CEO — freelance full-stack engineering & product, Jul 2026 – Oct 2026)
+  Founded, owned and ran Strike Labs as CEO: sales, scoping, delivery and client relationships. Served 5 client engagements in parallel as a one-person team, owning both engineering and product on each—scoping the problem, shaping the solution, and shipping it. Generated more revenue over the period than a single engineering salary would have paid.
+  https://strikelabs.tech
+- Tolstoy (Full-Stack Engineer, Apr 2025 – Jul 2026)
+  Full-time, on-site in Tel Aviv-Yafo, Israel.
   Joined the AI platform/player team and led the Tolstoy Media Gallery from concept to production—a fully-featured replacement for Shopify's native media gallery, with rich analytics and an automated A/B testing system. E2E project ownership—Designed and implemented all parts including serverless AWS CDK infrastructure and backend, Shopify-compatible server-side-rendered widget for best performance and resilience, and consistently-designed ShadCN control plane for merchants. Quickly explored the Shopify Admin API and architected an optimized serverless backend with Lambda, SQS, DynamoDB, and RDS, exposing a structured API with Zod schemas. Built analytics pipelines using CubeJS to aggregate data from Snowflake. Created a maintainable workflow to write Preact code once and compile it to both SSR Liquid templates and CSR hydration scripts, releasing this as the open-source mini-framework Preliquify (github.com/MichaelNusair/preliquify). Leveraged Cursor IDE (and other AI tools) for AI-assisted development, accelerating iteration cycles, while heavily integrating GenAI into products.
   https://gotolstoy.com
-- DefenseTech (Full-Stack Engineer, Oct 2021 – Apr 2025)
+- DefenseTech (Full-Stack Engineer, Nov 2021 – Apr 2025)
+  Full-time, on-site in Center District, Israel. 8 yrs 10 mos at DefenseTech in total, across this role and the two below.
   Transitioned into the development team for a main Command & Control system, a mission-critical application for defense operations and safety.
   Frontend: maintained a legacy AngularJS-Cesium pioneering web-based system, a project originally initiated in 2014, while optimizing performance and integrating modern React and MUI components using react2angular.
   Backend: designed and developed a Node.js-based distributed system, migrating from a monolithic architecture to 30+ microservices. Led a new real-time notifications feature from 0. In the last year, led the adoption of Tyk as the API gateway, integrating it with an rhSSO solution to meet authentication and authorization requirements. This deepened understanding of API gateways, identity management, and security protocols. Utilized GraphQL as the standard framework for backend APIs, on-prem MongoDB replica set as main DB, Mongoose as ORM and Redis for queueing, caching, and Pub/Sub features.
   DevOps & Operations: Kubernetes deployments and CI/CD pipelines with Jenkins, Helm, and ArgoCD. Led the system's Disaster Recovery Plan (DRP), conducting experiments to improve multi-regional resilience. Senior on-call engineer, responsible for troubleshooting critical production issues in a 24/7 rotation during high-stakes operational periods.
-- Product Manager (Oct 2020 – Oct 2021)
+- Product Manager at DefenseTech (Oct 2020 – Oct 2021)
   Managing the development and assimilation process of all new systems/versions used in the control division. Represented hundreds of operational users while pushing the product forward, dealing with complex bug fixes and new features from conception to deployment, all under the strict directives of operating capability declaration.
-- Operations Specialist (2016 – 2020)
+- Operations Specialist at DefenseTech (2016 – 2020)
   Held high-responsibility roles, both while overseeing operational shifts and leading teams, as well as managing strategic projects when not on shift.
 
 Education
@@ -89,10 +105,10 @@ Extended Marketing Knowledge Base (use for detailed answers about skills, projec
 
 Marketing Knowledge Base — Condensed Summary for AI Agent
 
-POSITIONING: Michael Nusair is a senior full-stack engineer, cloud architect, AI engineer, and serial technical founder with 9+ years of experience. He ships products from zero to scale — alone if needed. He is the engineer you hire when you need one person to do the work of a team.
+POSITIONING: Michael Nusair is a senior full-stack engineer, cloud architect, AI engineer, and serial technical founder with 10+ years of experience. He ships products from zero to scale — alone if needed. He is the engineer you hire when you need one person to do the work of a team.
 
 TOP SELLING POINTS:
-1. 9+ years in tech spanning defense (mission-critical C2 systems), AI commerce (Tolstoy), and 10+ self-built ventures
+1. 10+ years in tech spanning defense (mission-critical C2 systems), AI commerce (Tolstoy), and 10+ self-built ventures
 2. Genuine full-stack: TypeScript, React 17-19, Next.js 12-16, Node.js, Python/FastAPI, C++20, PHP/Laravel — not just frontend + REST
 3. Cloud-native architect: AWS (CDK, Lambda, ECS, EKS, 40+ Lambda functions in production), GCP (Cloud Run), Azure, Kubernetes/OpenShift (3.5 years)
 4. Built 6+ production AI systems: OpenAI Realtime voice AI, AWS Bedrock/Claude document analysis, Azure Whisper transcription, autonomous A/B testing, agentic UI, GPT-4 bug analysis
@@ -103,11 +119,15 @@ TOP SELLING POINTS:
 9. Product management background: 1 year as PM, writes RFCs, manages releases, bridges business and engineering
 10. Entrepreneur's instinct: thinks about ROI, user value, and business outcomes — not just code quality
 
-CURRENT ROLE: Full-Stack Engineer at Tolstoy (Apr 2025–present). Led the Media Gallery product from zero to production: serverless AWS CDK, Shopify SSR widgets, CubeJS/Snowflake analytics, autonomous A/B testing. Achieved 40% faster development with AI-assisted tooling. Open-sourced Preliquify.
+CURRENT ROLE: Full-Stack Engineer at Anchor (Oct 2026–present), full-time on-site in Tel Aviv-Yafo. Recently started — there is no public detail about this work yet, so do not describe or speculate about it beyond the role, employer, and start date.
+OWN AGENCY (Jul 2026–Oct 2026): Owner & CEO of Strike Labs (strikelabs.tech) — freelance engineering and product. Ran 5 client engagements in parallel as a one-person team, owning both engineering and product on each, and generated more revenue over the period than a single engineering salary would have paid. This is the strongest proof point that he can carry a client relationship end to end, not just the code.
+PREVIOUS ROLE: Full-Stack Engineer at Tolstoy (Apr 2025–Jul 2026). Led the Media Gallery product from zero to production: serverless AWS CDK, Shopify SSR widgets, CubeJS/Snowflake analytics, autonomous A/B testing. Achieved 40% faster development with AI-assisted tooling. Open-sourced Preliquify.
 DEFENSE EXPERIENCE (3.5 years): Mission-critical command and control system. Migrated monolith to 30+ microservices on Kubernetes/OpenShift. Led API gateway adoption (Tyk + SSO). Designed disaster recovery plan with live experiments. Senior on-call engineer 24/7. GraphQL APIs, MongoDB, Redis pub/sub/caching/locking.
 
 KEY VENTURES (tech overview only):
-- GetVL: AI technical planning platform — Next.js 16, AWS Bedrock/Claude, Prisma, SQS, Lambda workers, admin dashboard
+- GetVL (getvl.shop): AI technical planning platform — Next.js 16, AWS Bedrock/Claude, Prisma, SQS, Lambda workers, admin dashboard; runs white-labelled per client (e.g. strike.getvl.shop)
+- TripleC (triplec.host): "Claude, Code, Cloud" — Claude Code as an installable phone chat app on a machine of its own, with server-side sessions that survive switching devices and a full VS Code editor alongside; MIT-licensed and self-hostable, or managed
+- Koine (koinespace.com): community-led early traction for pre-PMF founders — finds where the intended customer already talks and what they complain about in their own words, then helps reach them without getting thrown out of promotion-hostile communities; the affordable counterpart to enterprise social listening
 - TalkPilot: Voice AI shopping assistant — OpenAI Realtime API, WebRTC, multi-platform (Wix + WordPress + embeddable widget), GCP Cloud Run
 - Teder: Live event ticketing/streaming — FastAPI/Python, 40+ Lambda functions, Stripe payments, Vimeo streaming, Cognito auth
 - SevenNup: Hotel booking — Next.js + Laravel, Aurora Serverless v2, full CI/CD with GitHub Actions OIDC, cost-optimized AWS
@@ -135,5 +155,5 @@ DIFFERENTIATORS vs. typical freelancers:
 
 EDUCATION: B.Sc. Computer Science (Open University, in progress), SOC Analyst Certified, Linux Essentials Certified, PADI Rescue Diver
 
-CONTACT: MNPCMW6444@gmail.com | +972-52-897-1871 | michaelnusair.tech | linkedin.com/in/mik-n | github.com/MichaelNusair | x.com/NusairMichael
+CONTACT: MNPCMW6444@gmail.com | +972-52-897-1871 | michaelnusair.site | linkedin.com/in/mik-n | github.com/MichaelNusair | x.com/NusairMichael
 `;

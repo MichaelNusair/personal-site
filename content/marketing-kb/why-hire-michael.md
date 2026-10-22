@@ -70,4 +70,4 @@ Michael Nusair isn't a specialist in one thing — he's an expert in building th
 
 ---
 
-**Ready to talk?** MNPCMW6444@gmail.com | [michaelnusair.tech](https://michaelnusair.tech) | [LinkedIn](https://linkedin.com/in/mik-n)
+**Ready to talk?** MNPCMW6444@gmail.com | [michaelnusair.site](https://michaelnusair.site) | [LinkedIn](https://linkedin.com/in/mik-n)

@@ -24,7 +24,7 @@ Tolstoy needed a **complete replacement for Shopify's native media gallery** —
 
 ## Michael's Role
 
-**Full-Stack Engineer — Project Lead (April 2025–Present)**
+**Full-Stack Engineer — Project Lead (April 2025–July 2026)**
 
 Michael led the entire Media Gallery project from zero to production. No existing codebase, no existing architecture — just a product vision and a deadline.
 
