@@ -115,6 +115,22 @@ PREV_IMAGE="$($AWS lambda get-function --function-name "$LAMBDA_FUNCTION" \
   --query 'Code.ImageUri' --output text)"
 info "currently live: $PREV_IMAGE"
 
+# If the function is on a tag rather than a digest, pin it now. This script
+# moves `latest`, so by the time it prints a rollback command that tag would
+# already point at the image being deployed — a "rollback" to the new build.
+PREV_ROLLBACK="$PREV_IMAGE"
+if [[ "$PREV_IMAGE" != *"@sha256:"* ]]; then
+  PREV_DIGEST="$($AWS ecr describe-images --repository-name "$ECR_REPO" \
+    --image-ids "imageTag=${PREV_IMAGE##*:}" \
+    --query 'imageDetails[0].imageDigest' --output text 2>/dev/null || true)"
+  if [[ -n "$PREV_DIGEST" && "$PREV_DIGEST" != "None" ]]; then
+    PREV_ROLLBACK="${IMAGE}@${PREV_DIGEST}"
+    info "pinned for rollback: $PREV_ROLLBACK"
+  else
+    info "WARNING: could not pin ${PREV_IMAGE} to a digest; rollback target may move"
+  fi
+fi
+
 # ─── 2. ECR ─────────────────────────────────────────────────────────
 step "Logging in to ECR"
 
@@ -215,6 +231,6 @@ cat <<EOF
 
     Roll back with:
       ${AWS} lambda update-function-code \\
-        --function-name ${LAMBDA_FUNCTION} --image-uri ${PREV_IMAGE} \\
+        --function-name ${LAMBDA_FUNCTION} --image-uri ${PREV_ROLLBACK} \\
         --architectures ${LIVE_ARCH} --no-cli-pager
 EOF
