@@ -8,6 +8,7 @@
     "deploy": "cdk deploy PersonalSiteChatApi --require-approval never"
   },
   "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^1.0.0",
     "@aws-sdk/client-dynamodb": "^3.676.0",
     "@aws-sdk/lib-dynamodb": "^3.676.0",
     "@aws-sdk/client-ses": "^3.676.0",

@@ -7,6 +7,7 @@ import {
   GetCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { AnthropicBedrockMantle } from "@anthropic-ai/bedrock-sdk";
 import { randomUUID } from "crypto";
 import { SERVER_CONTEXT } from "./context";
 import { STRIKE_LABS_CONTEXT } from "./strike-labs-context";
@@ -18,20 +19,14 @@ const ddb = DynamoDBDocumentClient.from(dynamoClient);
 const ses = new SESClient({});
 
 const TABLE = process.env.CONVERSATIONS_TABLE as string;
-const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT as string;
-const AZURE_OPENAI_API_KEY = process.env.AZURE_OPENAI_API_KEY as string;
-const AZURE_OPENAI_DEPLOYMENT = process.env.AZURE_OPENAI_DEPLOYMENT as string;
-const AZURE_OPENAI_API_VERSION = process.env.AZURE_OPENAI_API_VERSION as string;
+const CHAT_MODEL = process.env.BEDROCK_CHAT_MODEL || "anthropic.claude-opus-5-5";
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
 const SES_FROM_EMAIL = process.env.SES_FROM_EMAIL || "";
 
 const loge = (...args: any[]) => {
   console.error(...args, {
     TABLE,
-    AZURE_OPENAI_ENDPOINT: AZURE_OPENAI_ENDPOINT ? '[set]' : '[missing]',
-    AZURE_OPENAI_API_KEY: AZURE_OPENAI_API_KEY ? '[set]' : '[missing]',
-    AZURE_OPENAI_DEPLOYMENT,
-    AZURE_OPENAI_API_VERSION,
+    CHAT_MODEL,
     ADMIN_TOKEN: ADMIN_TOKEN ? '[set]' : '[missing]',
     SES_FROM_EMAIL: SES_FROM_EMAIL || '[missing]',
   });
@@ -58,44 +53,67 @@ const buildResponse = (statusCode: number, body: unknown) => ({
 
 const nowIso = () => new Date().toISOString();
 
-async function callAzureOpenAI(messages: ChatMessage[]): Promise<string> {
-  if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY) {
-    loge(
-      "Azure OpenAI configuration error: Missing endpoint or API key",
-      {
-        AZURE_OPENAI_ENDPOINT: AZURE_OPENAI_ENDPOINT ? '[set]' : '[missing]',
-        AZURE_OPENAI_API_KEY: AZURE_OPENAI_API_KEY ? '[set]' : '[missing]',
-        AZURE_OPENAI_DEPLOYMENT,
-        AZURE_OPENAI_API_VERSION,
-      }
-    );
-    return "I'm not configured yet. Please try again later.";
+const anthropic = new AnthropicBedrockMantle({
+  awsRegion: process.env.AWS_REGION || "us-east-1",
+});
+
+/**
+ * Claude on Bedrock. This was Azure OpenAI (`gpt-51` on
+ * all-strike.openai.azure.com) until 2026-10-23, when the Azure estate was shut
+ * down. Three differences matter, and all three are silent if missed:
+ *
+ *  - The model id is the bare `anthropic.` one. This client speaks to Bedrock's
+ *    Messages-API endpoint, where the `us.anthropic.*` inference-profile id that
+ *    `bedrock-runtime:InvokeModel` requires returns a 404 instead.
+ *  - The system prompt is a separate parameter, not a `system` role inside the
+ *    array, and the array must open on a user turn and alternate. The callers
+ *    here build history with the system prompt first, so it is split back out.
+ *  - No `temperature` or `top_p`: the previous payload sent 0.3/0.9 and any
+ *    sampling parameter is rejected with a 400. `effort` replaces them.
+ *
+ * There is also no key any more — the function's own role is the credential, so
+ * nothing secret is in the Lambda's environment.
+ */
+async function callClaude(messages: ChatMessage[]): Promise<string> {
+  const systemParts: string[] = [];
+  const turns: { role: "user" | "assistant"; content: string }[] = [];
+
+  for (const m of messages) {
+    if (!m.content) continue;
+    if (m.role === "system") {
+      systemParts.push(m.content);
+      continue;
+    }
+    if (turns.length === 0 && m.role === "assistant") continue;
+    const last = turns[turns.length - 1];
+    if (last && last.role === m.role) {
+      last.content += `\n\n${m.content}`;
+      continue;
+    }
+    turns.push({ role: m.role, content: m.content });
   }
 
-  const base = AZURE_OPENAI_ENDPOINT.replace(/\/+$/, '');
-  const url = `${base}/openai/deployments/${AZURE_OPENAI_DEPLOYMENT}/chat/completions?api-version=${AZURE_OPENAI_API_VERSION}`;
-  const payload = {
-    messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    temperature: 0.3,
-    top_p: 0.9,
-    max_completion_tokens: 600,
-  } as const;
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "api-key": AZURE_OPENAI_API_KEY,
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    loge("Azure OpenAI error", res.status, txt);
+  if (turns.length === 0) {
+    return "I'm not sure what to answer — could you say that again?";
+  }
+
+  try {
+    const response = await anthropic.messages.create({
+      model: CHAT_MODEL,
+      max_tokens: 1024,
+      output_config: { effort: "low" },
+      ...(systemParts.length ? { system: systemParts.join("\n\n") } : {}),
+      messages: turns,
+    });
+
+    return response.content
+      .map((block) => (block.type === "text" ? block.text : ""))
+      .join("")
+      .trim();
+  } catch (err) {
+    loge("Bedrock error", err);
     return "Sorry, I couldn't generate a response right now.";
   }
-  const data: any = await res.json();
-  const content = data?.choices?.[0]?.message?.content || "";
-  return content;
 }
 
 function normalizePersona(raw: unknown): ChatPersona {
@@ -224,7 +242,7 @@ async function handleMessage(body: any) {
     userMsg,
   ];
 
-  const assistantText = await callAzureOpenAI(history);
+  const assistantText = await callClaude(history);
   const assistantMsg: ChatMessage = {
     role: "assistant",
     content: assistantText,

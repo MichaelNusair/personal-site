@@ -23,11 +23,12 @@ export interface ChatApiStackProps extends cdk.StackProps {
    * stack never has to write a DNS validation record into the zone.
    */
   certificateArn?: string;
-  /** Secret holding AZURE_OPENAI_API_KEY as a JSON field. */
-  azureSecretName?: string;
-  azureOpenAiEndpoint?: string;
-  azureOpenAiDeployment?: string;
-  azureOpenAiApiVersion?: string;
+  /**
+   * Bedrock model for the chat handler. The bare `anthropic.` id is correct:
+   * this is the Messages-API endpoint, where a `us.anthropic.*` inference
+   * profile id 404s.
+   */
+  chatModel?: string;
   /** Verified SES sender for correction emails. Empty disables them. */
   sesFromEmail?: string;
 }
@@ -52,10 +53,7 @@ export class ChatApiStack extends cdk.Stack {
       subdomain = 'chatapi',
       // *.michaelnusair.site + *.michaelnusair.tech, already ISSUED.
       certificateArn = 'arn:aws:acm:us-east-1:481432042359:certificate/9065b3f2-c40c-49af-86b9-a15607334126',
-      azureSecretName = 'getvl/app-secrets',
-      azureOpenAiEndpoint = 'https://all-strike.openai.azure.com',
-      azureOpenAiDeployment = 'gpt-51',
-      azureOpenAiApiVersion = '2025-03-01-preview',
+      chatModel = 'anthropic.claude-opus-5-5',
       sesFromEmail = '',
     } = props;
 
@@ -95,23 +93,13 @@ export class ChatApiStack extends cdk.Stack {
 
     // ─── Handler ────────────────────────────────────────────────────
 
-    // Resolved by CloudFormation at deploy time from Secrets Manager, so the
-    // key lives in neither this repo nor the synthesized template.
-    const azureApiKey = secretsmanager.Secret.fromSecretNameV2(
-      this,
-      'AzureSecret',
-      azureSecretName,
-    )
-      .secretValueFromJson('AZURE_OPENAI_API_KEY')
-      .unsafeUnwrap();
-
     const chatFunction = new NodejsFunction(this, 'ChatFunction', {
       entry: path.join(__dirname, 'lambda/chat/index.ts'),
       handler: 'handler',
       runtime: lambda.Runtime.NODEJS_20_X,
       architecture: lambda.Architecture.ARM_64,
       memorySize: 512,
-      // The handler calls Azure OpenAI and waits for the full completion;
+      // The handler calls Bedrock and waits for the full completion;
       // API Gateway caps us at 29s anyway.
       timeout: cdk.Duration.seconds(29),
       bundling: { target: 'es2022', externalModules: ['@aws-sdk/*'] },
@@ -124,16 +112,26 @@ export class ChatApiStack extends cdk.Stack {
       }),
       environment: {
         CONVERSATIONS_TABLE: conversationsTable.tableName,
-        AZURE_OPENAI_ENDPOINT: azureOpenAiEndpoint,
-        AZURE_OPENAI_DEPLOYMENT: azureOpenAiDeployment,
-        AZURE_OPENAI_API_VERSION: azureOpenAiApiVersion,
-        AZURE_OPENAI_API_KEY: azureApiKey,
+        BEDROCK_CHAT_MODEL: chatModel,
         ADMIN_TOKEN: adminTokenSecret.secretValue.unsafeUnwrap(),
         SES_FROM_EMAIL: sesFromEmail,
       },
     });
 
     conversationsTable.grantReadWriteData(chatFunction);
+
+    // The model is reached through the function's own role, so no key is stored
+    // anywhere — which is also why the Azure key that used to sit in this
+    // function's plaintext environment is simply gone.
+    chatFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+        resources: [
+          `arn:aws:bedrock:${cdk.Stack.of(this).region}::foundation-model/${chatModel}`,
+          `arn:aws:bedrock:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:inference-profile/*`,
+        ],
+      }),
+    );
 
     if (sesFromEmail) {
       chatFunction.addToRolePolicy(
