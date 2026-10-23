@@ -10,10 +10,23 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "./ui/tooltip";
+import { Anchor, Shield, Zap } from "lucide-react";
 
 interface ResumeContentProps {
   isEditable?: boolean;
 }
+
+/**
+ * 24px mark beside a company name in Experience. Tolstoy has a real logo;
+ * the rest use a glyph on the site's own teal so every row is marked the
+ * same way — and so DefenseTech, which is deliberately not named, does not
+ * need one.
+ */
+const CompanyMark = ({ children }: { children: React.ReactNode }) => (
+  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-resume-primary text-resume-text-light">
+    {children}
+  </span>
+);
 
 export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
   return (
@@ -317,7 +330,12 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
           {/* Anchor */}
           <AccordionItem value="exp-anchor">
             <AccordionTrigger className="py-3">
-              <span className="text-xl sm:text-2xl font-bold">Anchor</span>
+              <div className="flex items-center gap-3">
+                <CompanyMark>
+                  <Anchor className="h-3.5 w-3.5" />
+                </CompanyMark>
+                <span className="text-xl sm:text-2xl font-bold">Anchor</span>
+              </div>
               <span className="ml-4 text-sm text-gray-500 font-normal">
                 Full-Stack Engineer — October 2026 – Now
               </span>
@@ -332,7 +350,14 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
           {/* Strike Labs (freelance) */}
           <AccordionItem value="exp-strikelabs">
             <AccordionTrigger className="py-3">
-              <span className="text-xl sm:text-2xl font-bold">Strike Labs</span>
+              <div className="flex items-center gap-3">
+                <CompanyMark>
+                  <Zap className="h-3.5 w-3.5" />
+                </CompanyMark>
+                <span className="text-xl sm:text-2xl font-bold">
+                  Strike Labs
+                </span>
+              </div>
               <span className="ml-4 text-sm text-gray-500 font-normal">
                 Owner & CEO — July 2026 – October 2026
               </span>
@@ -379,7 +404,7 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
                 <img
                   src="/tolstoy.png"
                   alt="Tolstoy logo"
-                  className="h-6 w-6 object-contain"
+                  className="h-6 w-6 shrink-0 rounded-md object-contain"
                 />
                 <span className="text-xl sm:text-2xl font-bold">Tolstoy</span>
               </div>
@@ -462,7 +487,14 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
           {/* DefenseTech - Full-Stack Engineer */}
           <AccordionItem value="exp-defense">
             <AccordionTrigger className="py-3">
-              <span className="text-xl sm:text-2xl font-bold">DefenseTech</span>
+              <div className="flex items-center gap-3">
+                <CompanyMark>
+                  <Shield className="h-3.5 w-3.5" />
+                </CompanyMark>
+                <span className="text-xl sm:text-2xl font-bold">
+                  DefenseTech
+                </span>
+              </div>
               <span className="ml-4 text-sm text-gray-500 font-normal">
                 Full-Stack Engineer — November 2021 – April 2025
               </span>
@@ -560,7 +592,14 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
           {/* DefenseTech - Product Manager */}
           <AccordionItem value="exp-pm">
             <AccordionTrigger className="py-3">
-              <span className="text-xl sm:text-2xl font-bold">DefenseTech</span>
+              <div className="flex items-center gap-3">
+                <CompanyMark>
+                  <Shield className="h-3.5 w-3.5" />
+                </CompanyMark>
+                <span className="text-xl sm:text-2xl font-bold">
+                  DefenseTech
+                </span>
+              </div>
               <span className="ml-4 text-sm text-gray-500 font-normal">
                 Product Manager — October 2020 – October 2021
               </span>
@@ -583,7 +622,14 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
           {/* DefenseTech - Operations Specialist */}
           <AccordionItem value="exp-ops">
             <AccordionTrigger className="py-3">
-              <span className="text-xl sm:text-2xl font-bold">DefenseTech</span>
+              <div className="flex items-center gap-3">
+                <CompanyMark>
+                  <Shield className="h-3.5 w-3.5" />
+                </CompanyMark>
+                <span className="text-xl sm:text-2xl font-bold">
+                  DefenseTech
+                </span>
+              </div>
               <span className="ml-4 text-sm text-gray-500 font-normal">
                 Operations Specialist — 2016 – 2020
               </span>
