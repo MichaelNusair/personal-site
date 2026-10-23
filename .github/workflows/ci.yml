@@ -73,27 +73,29 @@ jobs:
           docker create --name extract $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG
           docker cp extract:/app/.next/static ./static-assets
           docker rm extract
-          aws s3 sync ./static-assets s3://mntech-internal-static-${{ secrets.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}/_next/static/ --delete
+          # Deliberately NOT --delete. The running Lambda still serves the
+          # previous build's HTML, which references the previous build's
+          # content-hashed chunks; deleting them here would strip the live
+          # page's JS/CSS until the Lambda update below lands. Old chunks are
+          # left to accumulate — they are small, and this keeps deploys
+          # zero-downtime.
+          aws s3 sync ./static-assets s3://mntech-internal-static-${{ secrets.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}/_next/static/
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install CDK dependencies
-        working-directory: infra
-        run: npm ci
-
-      - name: Deploy CDK stack
-        working-directory: infra
-        env:
-          SSR_IMAGE_URI: ${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO }}:${{ github.sha }}
-          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-        run: npx cdk deploy PersonalSite --require-approval never
+      # NOTE: the CDK deploy step is intentionally absent.
+      #
+      # The live resources (Lambda mntech-internal-ssr, ECR mntech-internal-web,
+      # the static bucket, and the michaelnusair.site API Gateway domain) are not
+      # managed by any CloudFormation stack — there is no PersonalSite stack in
+      # the account and the Lambda carries no aws:cloudformation tags. Running
+      # `cdk deploy` would therefore attempt to CREATE the stack, which:
+      #   1. fails on the already-taken bucket / ECR / Lambda names, and
+      #   2. writes the apex and www Route53 records via UPSERT on the way in,
+      #      then DELETES them during the rollback — taking michaelnusair.site's
+      #      DNS down rather than just failing.
+      #
+      # Restore this step only after importing those resources into the stack
+      # (`cdk import PersonalSite`). Until then this job deploys application code
+      # only: image -> ECR, static assets -> S3, then the Lambda below.
 
       - name: Update Lambda function
         env:
@@ -106,9 +108,18 @@ jobs:
             --no-cli-pager
           aws lambda wait function-updated --function-name mntech-internal-ssr
 
+      # Best-effort: there is no PersonalSite stack to read an output from, and
+      # the apex currently resolves straight to API Gateway with no CloudFront in
+      # front of it, so this is a no-op today. Kept for after the import, and
+      # made non-fatal so it cannot turn a good deploy red.
       - name: Invalidate CloudFront cache
+        continue-on-error: true
         run: |
-          DIST_ID=$(aws cloudformation describe-stacks --stack-name PersonalSite --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" --output text)
-          if [ -n "$DIST_ID" ]; then
-            aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
+          DIST_ID=$(aws cloudformation describe-stacks --stack-name PersonalSite \
+            --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" \
+            --output text 2>/dev/null || true)
+          if [ -n "$DIST_ID" ] && [ "$DIST_ID" != "None" ]; then
+            aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
+          else
+            echo "No PersonalSite stack / distribution output — skipping."
           fi
