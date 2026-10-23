@@ -123,12 +123,17 @@ export class ChatApiStack extends cdk.Stack {
     // The model is reached through the function's own role, so no key is stored
     // anywhere — which is also why the Azure key that used to sit in this
     // function's plaintext environment is simply gone.
+    // `bedrock-mantle`, not `bedrock`. The Anthropic SDK's Bedrock client talks to the
+    // Messages-API endpoint, which is a separate IAM service with its own action and its
+    // own resource shape — a project, not a foundation model. Granting
+    // `bedrock:InvokeModel` here looks right, deploys clean and then fails at runtime
+    // with `not authorized to perform: bedrock-mantle:CreateInference`, which is how
+    // this was found.
     chatFunction.addToRolePolicy(
       new iam.PolicyStatement({
-        actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+        actions: ['bedrock-mantle:CreateInference'],
         resources: [
-          `arn:aws:bedrock:${cdk.Stack.of(this).region}::foundation-model/${chatModel}`,
-          `arn:aws:bedrock:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:inference-profile/*`,
+          `arn:aws:bedrock-mantle:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:project/default`,
         ],
       }),
     );
