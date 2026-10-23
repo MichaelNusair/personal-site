@@ -5,7 +5,7 @@
     "build": "tsc",
     "cdk": "cdk",
     "synth": "cdk synth",
-    "deploy": "cdk deploy --all --require-approval never"
+    "deploy": "cdk deploy PersonalSiteChatApi --require-approval never"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.676.0",

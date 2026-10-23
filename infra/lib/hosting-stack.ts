@@ -8,10 +8,6 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as apigw from 'aws-cdk-lib/aws-apigateway';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
@@ -30,8 +26,6 @@ interface HostingStackProps extends cdk.StackProps {
   /** GetVL funnel overrides */
   getvlStartIdeaUrl?: string;
   getvlUploadRfqUrl?: string;
-  /** Set to false to skip deploying chat API resources (DynamoDB, Lambda, API GW). Useful when the site shares a chat API from another stack. */
-  deployChatApi?: boolean;
 }
 
 export class HostingStack extends cdk.Stack {
@@ -43,7 +37,6 @@ export class HostingStack extends cdk.Stack {
     const siteProfile = props.siteProfile || 'personal';
     const siteUrl = props.siteUrl || `https://${domainName}`;
     const chatApiBase = props.chatApiBase || `https://chatapi.${domainName}/`;
-    const deployChatApi = props.deployChatApi !== false;
 
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
       hostedZoneId,
@@ -175,132 +168,12 @@ export class HostingStack extends cdk.Stack {
       ttl: cdk.Duration.hours(1),
     });
 
-    // ─── Chat API (DynamoDB + Lambda + API Gateway) ─────────────
+    // ─── Chat API ───────────────────────────────────────────────
+    //
+    // Moved out to ChatApiStack (infra/lib/chat-api-stack.ts) and deployed
+    // separately. It is all-new, additive resources and owns only its own
+    // subdomain, so unlike this stack it is actually deployable.
 
-    if (deployChatApi) {
-
-    const conversationsTable = new dynamodb.Table(this, 'ConversationsTable', {
-      partitionKey: { name: 'conversationId', type: dynamodb.AttributeType.STRING },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      encryption: dynamodb.TableEncryption.AWS_MANAGED,
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
-    });
-
-    const azureOpenAiKeySecretName =
-      (this.node.tryGetContext('azureOpenAiApiKeySecretName') as string) ||
-      process.env.AZURE_OPENAI_API_KEY_SECRET_NAME || '';
-    const adminTokenSecretName =
-      (this.node.tryGetContext('adminTokenSecretName') as string) ||
-      process.env.ADMIN_TOKEN_SECRET_NAME || '';
-
-    const azureKeySecret = azureOpenAiKeySecretName
-      ? secretsmanager.Secret.fromSecretNameV2(this, 'AzureOpenAIKeySecret', azureOpenAiKeySecretName)
-      : undefined;
-    const adminTokenSecret = adminTokenSecretName
-      ? secretsmanager.Secret.fromSecretNameV2(this, 'AdminTokenSecret', adminTokenSecretName)
-      : undefined;
-
-    const azureOpenAiEndpoint =
-      (this.node.tryGetContext('azureOpenAiEndpoint') as string) ||
-      process.env.AZURE_OPENAI_ENDPOINT || '';
-    const azureOpenAiDeployment =
-      (this.node.tryGetContext('azureOpenAiDeployment') as string) ||
-      process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-51';
-    const azureOpenAiApiVersion =
-      (this.node.tryGetContext('azureOpenAiApiVersion') as string) ||
-      process.env.AZURE_OPENAI_API_VERSION || '2025-03-01-preview';
-    const sesFromEmail =
-      (this.node.tryGetContext('sesFromEmail') as string) ||
-      process.env.SES_FROM_EMAIL || '';
-
-    const azureOpenAiApiKey =
-      (this.node.tryGetContext('azureOpenAiApiKey') as string) ||
-      process.env.AZURE_OPENAI_API_KEY || '';
-    const adminToken =
-      (this.node.tryGetContext('adminToken') as string) ||
-      process.env.ADMIN_TOKEN || '';
-
-    const chatEnv: { [key: string]: string } = {
-      CONVERSATIONS_TABLE: conversationsTable.tableName,
-      AZURE_OPENAI_ENDPOINT: azureOpenAiEndpoint,
-      AZURE_OPENAI_DEPLOYMENT: azureOpenAiDeployment,
-      AZURE_OPENAI_API_VERSION: azureOpenAiApiVersion,
-      SES_FROM_EMAIL: sesFromEmail,
-      AZURE_OPENAI_API_KEY: azureKeySecret
-        ? azureKeySecret.secretValue.toString()
-        : azureOpenAiApiKey,
-      ADMIN_TOKEN: adminTokenSecret
-        ? adminTokenSecret.secretValue.toString()
-        : adminToken,
-    };
-
-    const chatFunction = new NodejsFunction(this, 'ChatFunction', {
-      entry: path.join(__dirname, 'lambda/chat/index.ts'),
-      handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-      memorySize: 512,
-      timeout: cdk.Duration.seconds(20),
-      bundling: { target: 'es2021', externalModules: ['aws-sdk'] },
-      environment: chatEnv,
-    });
-
-    conversationsTable.grantReadWriteData(chatFunction);
-    chatFunction.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['ses:SendEmail', 'ses:SendRawEmail'],
-        resources: ['*'],
-      }),
-    );
-
-    const api = new apigw.RestApi(this, 'ChatApi', {
-      restApiName: 'InterviewChatApi',
-      deployOptions: { stageName: 'prod' },
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigw.Cors.ALL_ORIGINS,
-        allowMethods: ['OPTIONS', 'GET', 'POST'],
-        allowHeaders: apigw.Cors.DEFAULT_HEADERS,
-      },
-    });
-
-    const chatResource = api.root.addResource('chat');
-    const lambdaIntegration = new apigw.LambdaIntegration(chatFunction, { proxy: true });
-    chatResource.addResource('start').addMethod('POST', lambdaIntegration);
-    chatResource.addResource('message').addMethod('POST', lambdaIntegration);
-    chatResource.addResource('correction').addMethod('POST', lambdaIntegration);
-    chatResource.addResource('conversation').addResource('{id}').addMethod('GET', lambdaIntegration);
-
-    const apiDomainNameStr = `chatapi.${domainName}`;
-    const apiDomain = new apigw.DomainName(this, 'ChatApiCustomDomain', {
-      domainName: apiDomainNameStr,
-      certificate,
-      endpointType: apigw.EndpointType.EDGE,
-      securityPolicy: apigw.SecurityPolicy.TLS_1_2,
-    });
-
-    new apigw.BasePathMapping(this, 'ChatApiDomainMapping', {
-      domainName: apiDomain,
-      restApi: api,
-      basePath: '',
-      stage: api.deploymentStage,
-    });
-
-    new route53.ARecord(this, 'ChatApiARecord', {
-      zone: hostedZone,
-      recordName: 'chatapi',
-      target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(apiDomain)),
-    });
-    new route53.AaaaRecord(this, 'ChatApiAAAARecord', {
-      zone: hostedZone,
-      recordName: 'chatapi',
-      target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(apiDomain)),
-    });
-
-    // ─── Outputs ────────────────────────────────────────────────
-
-    new cdk.CfnOutput(this, 'ChatApiUrl', { value: api.url });
-    new cdk.CfnOutput(this, 'ChatApiCustomDomainUrl', { value: `https://${apiDomainNameStr}/` });
-
-    } // end deployChatApi
 
     new cdk.CfnOutput(this, 'DistributionDomainName', { value: distribution.distributionDomainName });
     new cdk.CfnOutput(this, 'DistributionId', { value: distribution.distributionId });

@@ -7,119 +7,110 @@ on:
     branches: [main]
 
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: false
 
 env:
   AWS_REGION: us-east-1
 
 jobs:
+  # Runs on pull requests AND on pushes to main, so main is never "validated"
+  # only in hindsight.
   validate:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
       - run: npm ci
       # Prisma types are generated, not checked in — typecheck fails without this.
       - run: npx prisma generate --schema=packages/database/prisma/schema.prisma
       - run: npm run typecheck
+      - name: Lint deploy scripts
+        run: bash -n scripts/deploy.sh && bash -n deploy.env
 
-  build-and-deploy:
+  # Deploying is one script, the same one a human runs locally
+  # (scripts/deploy.sh). CI does not get its own copy of the build/push/release
+  # logic, so the two cannot drift.
+  #
+  # As of 2026-10-23 this job SKIPS: the repo's AWS_ACCESS_KEY_ID /
+  # AWS_SECRET_ACCESS_KEY secrets are present but rejected by STS
+  # ("The security token included in the request is invalid" — run 39920590698),
+  # so every push to main was failing here. Rather than go red on every commit
+  # for a known-missing credential, the job probes the credentials first and, if
+  # they do not work, writes a loud summary saying the deploy was skipped and a
+  # human has to run scripts/deploy.sh. Rotate the two secrets and this job
+  # starts deploying again with no change to this file.
+  deploy:
+    needs: validate
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
-    env:
-      ECR_REPO: mntech-internal-web
     steps:
       - uses: actions/checkout@v4
 
       - name: Configure AWS credentials
+        id: creds
+        continue-on-error: true
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build and push Docker image
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build \
-            --build-arg NEXT_PUBLIC_SITE_PROFILE=personal \
-            --build-arg NEXT_PUBLIC_SITE_URL=https://michaelnusair.site \
-            --build-arg NEXT_PUBLIC_CHAT_API_BASE=https://chatapi.michaelnusair.site/ \
-            -t $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG \
-            -t $ECR_REGISTRY/$ECR_REPO:latest \
-            .
-          docker push $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPO:latest
-
-      - name: Upload static assets to S3
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker create --name extract $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG
-          docker cp extract:/app/.next/static ./static-assets
-          docker rm extract
-          # Deliberately NOT --delete. The running Lambda still serves the
-          # previous build's HTML, which references the previous build's
-          # content-hashed chunks; deleting them here would strip the live
-          # page's JS/CSS until the Lambda update below lands. Old chunks are
-          # left to accumulate — they are small, and this keeps deploys
-          # zero-downtime.
-          aws s3 sync ./static-assets s3://mntech-internal-static-${{ secrets.AWS_ACCOUNT_ID }}-${{ env.AWS_REGION }}/_next/static/
-
-      # NOTE: the CDK deploy step is intentionally absent.
-      #
-      # The live resources (Lambda mntech-internal-ssr, ECR mntech-internal-web,
-      # the static bucket, and the michaelnusair.site API Gateway domain) are not
-      # managed by any CloudFormation stack — there is no PersonalSite stack in
-      # the account and the Lambda carries no aws:cloudformation tags. Running
-      # `cdk deploy` would therefore attempt to CREATE the stack, which:
-      #   1. fails on the already-taken bucket / ECR / Lambda names, and
-      #   2. writes the apex and www Route53 records via UPSERT on the way in,
-      #      then DELETES them during the rollback — taking michaelnusair.site's
-      #      DNS down rather than just failing.
-      #
-      # Restore this step only after importing those resources into the stack
-      # (`cdk import PersonalSite`). Until then this job deploys application code
-      # only: image -> ECR, static assets -> S3, then the Lambda below.
-
-      - name: Update Lambda function
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          aws lambda update-function-code \
-            --function-name mntech-internal-ssr \
-            --image-uri $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG \
-            --no-cli-pager
-          aws lambda wait function-updated --function-name mntech-internal-ssr
-
-      # Best-effort: there is no PersonalSite stack to read an output from, and
-      # the apex currently resolves straight to API Gateway with no CloudFront in
-      # front of it, so this is a no-op today. Kept for after the import, and
-      # made non-fatal so it cannot turn a good deploy red.
-      - name: Invalidate CloudFront cache
+      - name: Check the credentials actually work
+        id: probe
+        if: steps.creds.outcome == 'success'
         continue-on-error: true
+        run: aws sts get-caller-identity
+
+      - name: Explain the skip
+        if: steps.creds.outcome != 'success' || steps.probe.outcome != 'success'
         run: |
-          DIST_ID=$(aws cloudformation describe-stacks --stack-name PersonalSite \
-            --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" \
-            --output text 2>/dev/null || true)
-          if [ -n "$DIST_ID" ] && [ "$DIST_ID" != "None" ]; then
-            aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
-          else
-            echo "No PersonalSite stack / distribution output — skipping."
-          fi
+          {
+            echo "## Deploy skipped — no working AWS credentials"
+            echo
+            echo "This repository's \`AWS_ACCESS_KEY_ID\` / \`AWS_SECRET_ACCESS_KEY\`"
+            echo "secrets are missing or rejected by STS, so CI cannot reach account"
+            echo "481432042359. **The live site was not updated by this run.**"
+            echo
+            echo "To ship this commit, run the deploy by hand:"
+            echo
+            echo '```sh'
+            echo "./scripts/deploy.sh"
+            echo '```'
+            echo
+            echo "Rotate the two secrets to re-enable automatic deploys."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::warning title=Deploy skipped::No working AWS credentials; run ./scripts/deploy.sh by hand to ship this commit."
+
+      # Needed because the runner is x86_64 and so is the Lambda — no QEMU here,
+      # unlike a local build on an aarch64 box.
+      - name: Set up Buildx
+        if: steps.probe.outcome == 'success'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build, push and release
+        if: steps.probe.outcome == 'success'
+        # Empty profile = use the credentials already in the environment.
+        # Every other setting comes from deploy.env.
+        run: AWS_PROFILE_NAME= ./scripts/deploy.sh
+
+      # NOTE on two steps that used to live here and are deliberately gone:
+      #
+      # 1. `cdk deploy` — the live Lambda, ECR repo and API Gateway domain are
+      #    not in any CloudFormation stack, so a deploy would try to CREATE
+      #    them, fail on the taken names, and DELETE the apex/www Route53
+      #    records it had already UPSERT-ed on the way in. That is a DNS outage,
+      #    not a failed build. See README.md "Infrastructure".
+      #
+      # 2. `aws s3 sync ./static-assets …` — it wrote to
+      #    `_next/static/static/…` (doubled prefix, because `docker cp` brings
+      #    the directory along with its name), a path no request ever asks for.
+      #    The bucket was never actually serving the site: the Dockerfile copies
+      #    `.next/static` into the image and Next's standalone server answers
+      #    those requests itself. Updating the Lambda is the whole deploy, and
+      #    it is atomic — HTML and its content-hashed chunks ship together.
