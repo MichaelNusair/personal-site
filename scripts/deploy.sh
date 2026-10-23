@@ -145,6 +145,15 @@ info "logged in to $REGISTRY"
 # ─── 3. Build ───────────────────────────────────────────────────────
 step "Building image for $PLATFORM"
 
+# `latest` should mean "what is live", so a dry run does not move it — it pushes
+# the commit tag only. The function itself always runs a digest, so the tag is
+# for humans reading the repository, not for the release.
+LATEST_TAG=(-t "${IMAGE}:latest")
+if [[ "$DRY_RUN" == "1" ]]; then
+  LATEST_TAG=()
+  info "dry run: pushing ${GIT_SHA} only, leaving :latest alone"
+fi
+
 BUILDER=site-builder
 if ! $DOCKER buildx inspect "$BUILDER" >/dev/null 2>&1; then
   info "creating buildx builder '$BUILDER'"
@@ -164,7 +173,7 @@ $DOCKER buildx build \
   --cache-from "type=registry,ref=${IMAGE}:buildcache" \
   --cache-to "type=registry,ref=${IMAGE}:buildcache,mode=max,image-manifest=true,oci-mediatypes=true,ignore-error=true" \
   -t "${IMAGE}:${GIT_SHA}" \
-  -t "${IMAGE}:latest" \
+  "${LATEST_TAG[@]}" \
   --push \
   .
 
