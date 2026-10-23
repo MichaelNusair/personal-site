@@ -115,6 +115,20 @@ What *is* CloudFormation-managed, because it was created new and additively:
   Its Azure OpenAI key is read at deploy time from the `getvl/app-secrets`
   secret, not stored in this repo.
 
+  Check it end to end — real request, real Azure call, real DynamoDB write:
+
+  ```sh
+  ./scripts/smoke-chat.sh                      # default question
+  ./scripts/smoke-chat.sh "Where is he based?" # or ask your own
+  ```
+
+  The `/admin` page wants the bearer token the stack generated. Read it with:
+
+  ```sh
+  aws --profile mntech1 secretsmanager get-secret-value \
+    --secret-id AdminToken38B307E8-Sfj53644ltsJ --query SecretString --output text
+  ```
+
 ## Production configuration gap
 
 The SSR Lambda has **no environment variables set at all**. The landing page and
