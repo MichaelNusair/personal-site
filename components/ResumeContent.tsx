@@ -424,7 +424,15 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
             </AccordionTrigger>
             <AccordionContent>
               <p className="text-sm text-gray-500 mb-3">
-                Full-time · On-site · Tel Aviv-Yafo, Israel
+                Full-time · On-site · Tel Aviv-Yafo, Israel ·{" "}
+                <a
+                  href="https://gotolstoy.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  gotolstoy.com
+                </a>
               </p>
               <p className="text-sm mb-3">
                 Joined the AI platform/player team and led the{" "}
@@ -483,14 +491,6 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
                   heavily integrating <strong>GenAI</strong> into products.
                 </li>
               </ul>
-              <a
-                href="https://gotolstoy.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-sm"
-              >
-                https://gotolstoy.com
-              </a>
             </AccordionContent>
           </AccordionItem>
 
