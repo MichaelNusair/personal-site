@@ -7,7 +7,10 @@ RUN apt-get update && apt-get install -y openssl libssl-dev && \
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+# The retry settings matter only when this is cross-built under QEMU (see
+# TARGET_ARCH in deploy.env): emulated TLS is slow enough that the registry
+# hangs up mid-install, and the default single attempt fails the whole build.
+RUN npm ci --fetch-retries=5 --fetch-retry-maxtimeout=120000 --fetch-timeout=600000
 
 COPY packages/database/prisma ./packages/database/prisma
 RUN npx prisma generate --schema=packages/database/prisma/schema.prisma

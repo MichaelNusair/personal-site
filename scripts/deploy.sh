@@ -77,23 +77,37 @@ if ! docker info >/dev/null 2>&1; then
   fi
 fi
 
-# The live function's architecture decides the build platform. Getting this
-# wrong is the classic failure here: this box is aarch64, the function is
-# x86_64, and a native build produces an image Lambda rejects at update time.
+# Architecture is explicit (TARGET_ARCH in deploy.env) rather than inherited
+# from whatever the function happens to be, and the image and the function are
+# always set together in the release step below. Mismatching them is the classic
+# failure here: Lambda rejects an image whose architecture is not its own, and
+# the error arrives at update time, after the whole build.
 LIVE_ARCH="$($AWS lambda get-function --function-name "$LAMBDA_FUNCTION" \
   --query 'Configuration.Architectures[0]' --output text 2>/dev/null)" \
   || die "Lambda '${LAMBDA_FUNCTION}' not found in ${ACCOUNT_ID}/${AWS_REGION}"
 
-case "$LIVE_ARCH" in
+case "$TARGET_ARCH" in
   x86_64) PLATFORM=linux/amd64 ;;
   arm64)  PLATFORM=linux/arm64 ;;
-  *)      die "unexpected Lambda architecture '$LIVE_ARCH'" ;;
+  *)      die "TARGET_ARCH must be arm64 or x86_64, got '$TARGET_ARCH'" ;;
 esac
-info "platform: $PLATFORM (matching live Lambda $LIVE_ARCH, host is $(uname -m))"
 
-if [[ "$PLATFORM" == "linux/amd64" && "$(uname -m)" == "aarch64" ]]; then
-  info "NOTE: cross-building amd64 under QEMU. First build is slow (~20-40 min);"
-  info "      later builds reuse the buildx layer cache."
+case "$(uname -m)" in
+  aarch64|arm64) HOST_ARCH=arm64 ;;
+  x86_64|amd64)  HOST_ARCH=x86_64 ;;
+  *)             HOST_ARCH="$(uname -m)" ;;
+esac
+
+if [[ "$TARGET_ARCH" == "$LIVE_ARCH" ]]; then
+  info "arch:    $TARGET_ARCH (function already $LIVE_ARCH)"
+else
+  info "arch:    $TARGET_ARCH — this deploy SWITCHES the function from $LIVE_ARCH"
+fi
+
+if [[ "$HOST_ARCH" != "$TARGET_ARCH" ]]; then
+  info "NOTE: host is $HOST_ARCH, so this cross-builds $TARGET_ARCH under QEMU."
+  info "      Expect 45+ minutes, and expect \`npm ci\` to be the flaky part:"
+  info "      emulated TLS is slow enough that the registry resets the socket."
 fi
 
 # Remember what is live so a rollback is a copy-paste away.
@@ -155,9 +169,12 @@ DIGEST="$($AWS ecr describe-images --repository-name "$ECR_REPO" \
   --query 'imageDetails[0].imageDigest' --output text)"
 info "digest: $DIGEST"
 
+# --architectures goes with --image-uri in the same call, so the function never
+# sits in a state where its architecture and its image disagree.
 $AWS lambda update-function-code \
   --function-name "$LAMBDA_FUNCTION" \
   --image-uri "${IMAGE}@${DIGEST}" \
+  --architectures "$TARGET_ARCH" \
   --no-cli-pager >/dev/null
 
 $AWS lambda wait function-updated --function-name "$LAMBDA_FUNCTION"
@@ -198,5 +215,6 @@ cat <<EOF
 
     Roll back with:
       ${AWS} lambda update-function-code \\
-        --function-name ${LAMBDA_FUNCTION} --image-uri ${PREV_IMAGE} --no-cli-pager
+        --function-name ${LAMBDA_FUNCTION} --image-uri ${PREV_IMAGE} \\
+        --architectures ${LIVE_ARCH} --no-cli-pager
 EOF
