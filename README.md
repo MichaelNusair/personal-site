@@ -48,12 +48,16 @@ copy of the logic.
 
 Three things that are easy to get wrong and that the script now handles for you:
 
-- **Architecture.** The Lambda is `x86_64`; the box this is usually deployed
-  from is `aarch64`. A native `docker build` there produces an image Lambda
-  rejects. The script reads the live function's architecture and builds for it,
-  cross-building under QEMU when it has to. The first such build takes 20-40
-  minutes (the `apt-get install ffmpeg` layer is most of it); later builds reuse
-  the registry layer cache.
+- **Architecture.** Lambda rejects an image built for the other instruction
+  set, and it says so only at release time, after the whole build. The function
+  runs `arm64` (`TARGET_ARCH` in `deploy.env`) to match the aarch64 box it is
+  deployed from, so the build is native and takes a few minutes. The script
+  sends `--architectures` in the same call as `--image-uri`, so the two can
+  never disagree, and it tells you when a deploy is about to change the
+  architecture. Flipping `TARGET_ARCH` back to `x86_64` works, but then an
+  aarch64 host cross-builds under QEMU, which takes about an hour and tends to
+  fail in `npm ci` with `ECONNRESET` — emulated TLS is slow enough that the
+  registry hangs up. That is why this is arm64.
 - **Buildx attestations.** `docker buildx build --push` adds provenance/SBOM by
   default, which makes the push an OCI image *index*. Lambda rejects those
   ("the image manifest, config or layer media type ... is not supported"). The
@@ -135,8 +139,19 @@ The SSR Lambda has **no environment variables set at all**. The landing page and
 the chat widget do not need any, which is why the site looks fine — but it means
 `DATABASE_URL`, the Azure Whisper credentials, the S3 uploads bucket and the
 NextAuth secrets are all absent, so `/f`, `/realtime` and Google sign-in cannot
-work in production regardless of what the code does. `.env.example` lists what
-they would need. Fixing that is a separate piece of work from deploying.
+work in production regardless of what the code does. `/realtime` currently
+answers 500, and the log says why:
+
+```
+[next-auth][error][NO_SECRET] Please define a `secret` in production.
+```
+
+`.env.example` lists what those routes would need, and the values exist in the
+`getvl/app-secrets` secret. Setting them is deliberately **not** part of
+deploying: the function is not in a CloudFormation stack, so anything set on it
+by hand is untracked state that the next person cannot see. Worth doing
+properly — adopt the function into IaC first (see above), then set its
+environment there.
 
 ## Architecture notes
 
