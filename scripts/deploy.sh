@@ -132,7 +132,7 @@ $DOCKER buildx build \
   --build-arg "NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}" \
   --build-arg "NEXT_PUBLIC_CHAT_API_BASE=${NEXT_PUBLIC_CHAT_API_BASE}" \
   --cache-from "type=registry,ref=${IMAGE}:buildcache" \
-  --cache-to "type=registry,ref=${IMAGE}:buildcache,mode=max,image-manifest=true" \
+  --cache-to "type=registry,ref=${IMAGE}:buildcache,mode=max,image-manifest=true,oci-mediatypes=true,ignore-error=true" \
   -t "${IMAGE}:${GIT_SHA}" \
   -t "${IMAGE}:latest" \
   --push \
