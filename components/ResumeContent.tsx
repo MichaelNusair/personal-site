@@ -470,7 +470,7 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
             <AccordionContent>
               <p className="text-sm text-gray-500 mb-3">
                 Full-time · On-site · Center District, Israel — 8 yrs 10 mos at
-                DefenseTech across the three roles below
+                DefenseTech across this role and the two below
               </p>
               <p className="text-sm mb-3">
                 Transitioned into the development team for a main{" "}
@@ -557,19 +557,17 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
             </AccordionContent>
           </AccordionItem>
 
-          {/* Product Manager */}
+          {/* DefenseTech - Product Manager */}
           <AccordionItem value="exp-pm">
             <AccordionTrigger className="py-3">
-              <span className="text-xl sm:text-2xl font-bold">
-                Product Manager
-              </span>
+              <span className="text-xl sm:text-2xl font-bold">DefenseTech</span>
               <span className="ml-4 text-sm text-gray-500 font-normal">
-                October 2020 – October 2021
+                Product Manager — October 2020 – October 2021
               </span>
             </AccordionTrigger>
             <AccordionContent>
               <p className="text-sm text-gray-500 mb-3">
-                DefenseTech · Full-time · On-site
+                Full-time · On-site · Center District, Israel
               </p>
               <p className="text-sm">
                 Managing the development and assimilation process of all new
@@ -582,19 +580,17 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
             </AccordionContent>
           </AccordionItem>
 
-          {/* Operations Specialist */}
+          {/* DefenseTech - Operations Specialist */}
           <AccordionItem value="exp-ops">
             <AccordionTrigger className="py-3">
-              <span className="text-xl sm:text-2xl font-bold">
-                Operations Specialist
-              </span>
+              <span className="text-xl sm:text-2xl font-bold">DefenseTech</span>
               <span className="ml-4 text-sm text-gray-500 font-normal">
-                2016 - 2020
+                Operations Specialist — 2016 – 2020
               </span>
             </AccordionTrigger>
             <AccordionContent>
               <p className="text-sm text-gray-500 mb-3">
-                DefenseTech · Full-time · On-site
+                Full-time · On-site · Center District, Israel
               </p>
               <p className="text-sm">
                 Held <strong>high-responsibility roles</strong>, both while
