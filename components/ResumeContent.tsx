@@ -10,17 +10,17 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "./ui/tooltip";
-import { Anchor, Shield, Zap } from "lucide-react";
+import { Shield, Zap } from "lucide-react";
 
 interface ResumeContentProps {
   isEditable?: boolean;
 }
 
 /**
- * 24px mark beside a company name in Experience. Tolstoy has a real logo;
- * the rest use a glyph on the site's own teal so every row is marked the
- * same way — and so DefenseTech, which is deliberately not named, does not
- * need one.
+ * 24px mark beside a company name in Experience. Anchor and Tolstoy have
+ * real logos; the rest use a glyph on the site's own teal so every row is
+ * marked the same way — and so DefenseTech, which is deliberately not named,
+ * does not need one.
  */
 const CompanyMark = ({ children }: { children: React.ReactNode }) => (
   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-resume-primary text-resume-text-light">
@@ -331,9 +331,11 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
           <AccordionItem value="exp-anchor">
             <AccordionTrigger className="py-3">
               <div className="flex items-center gap-3">
-                <CompanyMark>
-                  <Anchor className="h-3.5 w-3.5" />
-                </CompanyMark>
+                <img
+                  src="/anchor.png"
+                  alt="Anchor logo"
+                  className="h-6 w-6 shrink-0 rounded-md object-contain"
+                />
                 <span className="text-xl sm:text-2xl font-bold">Anchor</span>
               </div>
               <span className="ml-4 text-sm text-gray-500 font-normal">
@@ -342,7 +344,15 @@ export const ResumeContent = ({ isEditable = false }: ResumeContentProps) => {
             </AccordionTrigger>
             <AccordionContent>
               <p className="text-sm text-gray-500">
-                Full-time · On-site · Tel Aviv-Yafo, Israel
+                Full-time · On-site · Tel Aviv-Yafo, Israel ·{" "}
+                <a
+                  href="https://sayanchor.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  sayanchor.com
+                </a>
               </p>
             </AccordionContent>
           </AccordionItem>
